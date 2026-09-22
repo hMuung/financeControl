@@ -6,6 +6,7 @@ from views.components.background import Background
 from views.components.bottom_bar import ModernGlassBottomBar
 
 from views.home_view import HomeView
+from views.record_view import RecordView
 from views.empty_view import EmptyView
 
 def main(page: ft.Page):
@@ -22,7 +23,7 @@ def main(page: ft.Page):
         expand=True,
         controls=[
             HomeView(),
-            EmptyView("Historial"),
+            RecordView(),
             EmptyView("Proyeccion"),
             EmptyView("Analisis"),
             EmptyView("Mas"),

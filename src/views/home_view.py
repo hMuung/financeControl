@@ -1,6 +1,6 @@
 # src/views/home_view.py
 import flet as ft
-from views.components.header import Header
+from views.components.common.header import Header
 from views.components.quick_expense import QuickExpenseCard
 
 class HomeView(ft.Column):

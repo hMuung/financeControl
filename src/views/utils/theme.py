@@ -14,6 +14,9 @@ BUTTON_GRADIENT = ft.LinearGradient(
     colors=["#FFA07A", "#FF7F50"],
 )
 
+# Valores del header
+HEADER_TEXT_COLOR = "#2D3748"
+
 # Valores para el efecto Cristal / Espejo
 GLASS_BG_COLOR = ft.Colors.with_opacity(0.4, ft.Colors.WHITE)
 GLASS_BORDER_COLOR = ft.Colors.with_opacity(0.6, ft.Colors.WHITE)
