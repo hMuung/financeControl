@@ -11,6 +11,8 @@ from views.record_view import RecordView
 
 def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
+    page.platform = ft.PagePlatform.ANDROID
+    page.window.resizable = False
     page.padding = 0
     page.spacing = 0
 
@@ -60,7 +62,7 @@ def main(page: ft.Page):
     safe_content = ft.SafeArea(
         expand=True,
         content=ft.Container(
-            padding=16,
+            padding=ft.Padding.symmetric(vertical=0, horizontal=12),
             content=ft.Column(
                 controls=[
                     page_view,
@@ -73,12 +75,14 @@ def main(page: ft.Page):
     )
 
     app_layout = ft.Stack(
-        expand=True,
+        width=page.width,
+        height=page.height,
         controls=[
             Background(),
             safe_content,
         ],
     )
+
 
     page.add(app_layout)
 
