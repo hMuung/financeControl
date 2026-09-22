@@ -1,13 +1,19 @@
+# src/views/components/quick_expense.py
 import flet as ft
 
+from controllers.expense_controller import ExpenseController
 from views.components.common.glass_card import GlassCard
 from views.components.common.gradient_button import GradientButton
 from views.components.common.styled_dropdown import StyledDropdown
 from views.components.common.styled_textfield import StyledTextField
 from views.utils.theme import BUTTON_GRADIENT
 
+
 class QuickExpenseCard(GlassCard):
     def __init__(self):
+        # Instancia del controlador
+        self.controller = ExpenseController()
+
         # 1. Campo Categoria
         self.dd_category = StyledDropdown(
             label="Categoria",
@@ -15,8 +21,8 @@ class QuickExpenseCard(GlassCard):
             options_list=[
                 ("Comida", ft.Colors.GREEN_700, ft.Colors.GREEN_100),
                 ("Transporte", ft.Colors.ORANGE_700, ft.Colors.ORANGE_100),
-               ("Servivios", ft.Colors.RED_700, ft.Colors.RED_100)
-            ]
+                ("Servicios", ft.Colors.RED_700, ft.Colors.RED_100),
+            ],
         )
 
         # 2. Campo Monto
@@ -43,12 +49,9 @@ class QuickExpenseCard(GlassCard):
             on_click=self._on_add_click,
         )
 
-        # Etiqueta para mostrar mensaje de error
+        # Etiqueta para mostrar mensajes
         self.label = ft.Text(
-            value="",
-            color=ft.Colors.RED_400,
-            size=16,
-            weight=ft.FontWeight.W_500
+            value="", color=ft.Colors.RED_400, size=16, weight=ft.FontWeight.W_500
         )
 
         # Estructura visual del componente
@@ -75,31 +78,25 @@ class QuickExpenseCard(GlassCard):
         )
 
     def _on_add_click(self, e):
+        # Obtener valores de la interfaz
         category = self.dd_category.value
         amount = self.txt_amount.value
         origin = self.dd_origin.value
 
-        # Validar si alguno de los campos está vacío
-        message = ""
-        if not category:
-            message = "Falta Categoria."
-        if not amount:
-            message = "Falta Cantidad."
-        if not origin:
-            message = "Falta Origen."
+        # Proceso de la validacion y guardado
+        success, message = self.controller.create_expense(
+            category=category, amount_str=amount, origin=origin
+        )
 
-        if message:
-            self.label.value = message
-            self.label.color=ft.Colors.RED_400
-            self.update()
-            return
+        # Mostrar respuesta segun el resultado
+        self.label.value = message
+        if success:
+            self.label.color = ft.Colors.GREEN_400
+            # Limpiar entradas de la UI
+            self.dd_category.clean_data()
+            self.txt_amount.clean_data()
+            self.dd_origin.clean_data()
+        else:
+            self.label.color = ft.Colors.RED_400
 
-        # Marcar como registrado y liberar campos
-        self.label.value = "Registro correcto"
-        self.label.color=ft.Colors.GREEN_400
-        self.dd_category.clean_data()
-        self.txt_amount.clean_data()
-        self.dd_origin.clean_data()
         self.update()
-
-        print(f"Añadido: {category}, {amount}, {origin}")

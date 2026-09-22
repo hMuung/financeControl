@@ -1,13 +1,13 @@
 # src/main.py
 import flet as ft
 
-from config import BASE_DIR, APP_ICON_PATH
+from config import APP_ICON_PATH, BASE_DIR
 from views.components.background import Background
 from views.components.bottom_bar import ModernGlassBottomBar
-
+from views.empty_view import EmptyView
 from views.home_view import HomeView
 from views.record_view import RecordView
-from views.empty_view import EmptyView
+
 
 def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
@@ -17,29 +17,42 @@ def main(page: ft.Page):
     if APP_ICON_PATH.exists():
         page.window.icon = str(APP_ICON_PATH)
 
+    # Instancias de vistas
+    home_view = HomeView()
+    record_view = RecordView()
+
     # Coincidir con items de barra
     page_view = ft.PageView(
         selected_index=0,
         expand=True,
         controls=[
-            HomeView(),
-            RecordView(),
+            home_view,
+            record_view,
             EmptyView("Proyeccion"),
             EmptyView("Analisis"),
             EmptyView("Mas"),
         ],
     )
 
+    # Auxiliar para ecargar la vista del historial
+    def check_and_reload(index: int):
+        if index == 1:
+            record_view.load_history()
+
     # Clic en la barra -> Cambia el PageView
     def on_bottom_bar_click(index):
         page_view.selected_index = index
+        check_and_reload(index)
         page_view.update()
 
     bottom_bar = ModernGlassBottomBar(on_change=on_bottom_bar_click)
 
     # Deslizamiento con el dedo en PageView -> Cambia la Barra
     def on_page_swipe(e):
-        new_index = int(e.data) if isinstance(e.data, str) else e.control.selected_index
+        new_index = (
+            int(e.data) if isinstance(e.data, str) else e.control.selected_index
+        )
+        check_and_reload(new_index)
         bottom_bar.set_selected_index(new_index, notify=False)
 
     page_view.on_change = on_page_swipe
@@ -60,6 +73,7 @@ def main(page: ft.Page):
     )
 
     page.overlay.extend([Background(), safe_content])
+
 
 if __name__ == "__main__":
     ft.run(main, assets_dir=str(BASE_DIR))
