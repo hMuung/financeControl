@@ -1,7 +1,8 @@
-# src/views/record.py
+# src/views/record_view.py
 import flet as ft
 
-from controllers.expense_controller import ExpenseController  # <--- Controlador
+from controllers.expense_controller import ExpenseController
+from views.components.common.glass_table import GlassDataTable
 from views.components.common.header import Header
 from views.utils.theme import HEADER_TEXT_COLOR
 
@@ -10,11 +11,18 @@ class RecordView(ft.Column):
     def __init__(self):
         self.controller = ExpenseController()
 
-        # Contenedor desplazable para la lista de textos
-        self.history_container = ft.Column(
-            spacing=8,
-            scroll=ft.ScrollMode.AUTO,
-            expand=True,
+        # Definición flexible de las columnas
+        columns_config = [
+            {"label": "Fecha", "key": "date", "numeric": False},
+            {"label": "Categoría", "key": "category", "numeric": False},
+            {"label": "Monto", "key": "amount", "numeric": True},
+            {"label": "Origen", "key": "origin", "numeric": False},
+        ]
+
+        # Instancia de la tabla estilizada reutilizable
+        self.glass_table = GlassDataTable(
+            columns_config=columns_config,
+            empty_message="No hay gastos registrados aún.",
         )
 
         super().__init__(
@@ -29,31 +37,26 @@ class RecordView(ft.Column):
                         size=28,
                     ),
                 ),
-                self.history_container,
+                self.glass_table,  # <--- Agregamos el componente reutilizable
             ],
         )
 
     def did_mount(self):
-        """El componente entra en pantalla"""
         self.load_history()
 
     def load_history(self):
-        """Obtiene las entidades Expense desde el controlador y las renderiza"""
+        """Obtiene las entidades Expense del controller y las pasa en formato dict a la tabla."""
         expenses = self.controller.fetch_history()
 
-        self.history_container.controls.clear()
+        # Mapeo de objetos Expense a lista de dicts
+        table_data = [
+            {
+                "date": exp.date,
+                "category": exp.category,
+                "amount": exp.amount,
+                "origin": exp.origin,
+            }
+            for exp in expenses
+        ]
 
-        if not expenses:
-            self.history_container.controls.append(
-                ft.Text("No hay registros guardados", color=ft.Colors.GREY_500, size=14)
-            )
-        else:
-            for exp in expenses:
-                # Formato de texto simple con las propiedades del modelo Expense
-                text_line = f"• [{exp.date}] {exp.category} - ${exp.amount:.2f} ({exp.origin})"
-                
-                self.history_container.controls.append(
-                    ft.Text(value=text_line, size=14, color=ft.Colors.WHITE)
-                )
-
-        self.update()
+        self.glass_table.update_data(table_data)
