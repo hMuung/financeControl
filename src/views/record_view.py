@@ -1,3 +1,4 @@
+# src/views/record.py
 import flet as ft
 
 from controllers.expense_controller import ExpenseController
@@ -51,7 +52,8 @@ class RecordView(ft.Column):
                 "category": exp.category,
                 "amount": exp.amount,
                 "origin": exp.origin,
-                "description": getattr(exp, "description", ""),
+                "description": getattr(exp, "description", ""),  
+
             }
             for exp in expenses
         ]
@@ -60,10 +62,13 @@ class RecordView(ft.Column):
 
     def handle_delete_expense(self, item: dict):
         # Logica para eliminar el registro en la base de datos a travas del controlador
+        succcess, message = False, "Error al eliminar gasto"
         if "id" in item and hasattr(self.controller, "delete_expense"):
-            self.controller.delete_expense(item["id"])
+            succcess, message = self.controller.delete_expense(item["id"])
         self.load_history()
 
-    def handle_edit_expense(self, item: dict):
+        return succcess, message
+
+    def handle_edit_expense(self, item: dict):  
         # Logica para abrir el formulario o dialogo de edicion
-        print(f"Modificar elemento: {item}")
+        return True, f"Modificar elemento: {item}"

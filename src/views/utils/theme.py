@@ -1,4 +1,4 @@
-# src/views/components/utils/theme.py
+# src/views/utils/theme.py
 import flet as ft
 
 BACKGROUND_GRADIENT = ft.LinearGradient(
@@ -27,3 +27,23 @@ INACTIVE_ICON_COLOR = ft.Colors.with_opacity(0.7, "#3D2A54")
 TRANSPARENT_GRADIENT = ft.LinearGradient(
     colors=[ft.Colors.TRANSPARENT, ft.Colors.TRANSPARENT]
 )
+
+# Colores para los Toasts por tipo
+TOAST_COLORS = {
+    "success": {
+        "primary": ft.Colors.GREEN_700,
+        "secondary": ft.Colors.GREEN_500,
+    },
+    "error": {
+        "primary": ft.Colors.RED_700,
+        "secondary": ft.Colors.RED_500,
+    },
+    "warning": {
+        "primary": ft.Colors.AMBER_800,
+        "secondary": ft.Colors.AMBER_500,
+    },
+    "info": {
+        "primary": ft.Colors.BLUE_700,
+        "secondary": ft.Colors.BLUE_500,
+    },
+}

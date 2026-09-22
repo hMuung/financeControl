@@ -1,6 +1,7 @@
 import flet as ft
 import flet_datatable2 as fdt
 
+from views.utils.toast import Toast
 from views.components.common.glass_card import GlassCard
 from views.components.common.gradient_button import GradientButton
 from views.utils.theme import BACKGROUND_GRADIENT, HEADER_TEXT_COLOR
@@ -35,7 +36,7 @@ class GlassDataTable(ft.Stack):
         self.selected_item = None  # Almacena la fila seleccionada
 
         # Modal de filtros
-        self.modal_card = ft.Container(
+        self.filter_modal_card = ft.Container(
             width=float("inf"),
             padding=ft.Padding.symmetric(vertical=5, horizontal=8),
             border_radius=24,
@@ -93,7 +94,7 @@ class GlassDataTable(ft.Stack):
             ),
         )
 
-        self.full_screen_modal = ft.Container(
+        self.filter_modal = ft.Container(
             visible=False,
             expand=True,
             padding=20,
@@ -101,7 +102,7 @@ class GlassDataTable(ft.Stack):
             blur=ft.Blur(sigma_x=25, sigma_y=25),
             alignment=ft.Alignment.CENTER,
             on_click=self._close_filter_modal,
-            content=self.modal_card,
+            content=self.filter_modal_card,
         )
 
         # Modal y detalles de accion
@@ -259,15 +260,15 @@ class GlassDataTable(ft.Stack):
     # Ciclo de vida
     def did_mount(self):
         if self.page:
-            if self.full_screen_modal not in self.page.overlay:
-                self.page.overlay.append(self.full_screen_modal)
+            if self.filter_modal not in self.page.overlay:
+                self.page.overlay.append(self.filter_modal)
             if self.detail_modal not in self.page.overlay:
                 self.page.overlay.append(self.detail_modal)
 
     def will_unmount(self):
         if self.page:
-            if self.full_screen_modal in self.page.overlay:
-                self.page.overlay.remove(self.full_screen_modal)
+            if self.filter_modal in self.page.overlay:
+                self.page.overlay.remove(self.filter_modal)
             if self.detail_modal in self.page.overlay:
                 self.page.overlay.remove(self.detail_modal)
 
@@ -280,13 +281,13 @@ class GlassDataTable(ft.Stack):
     def _open_filter_modal(self, e=None):
         page = self._get_page(e)
         if page:
-            if self.full_screen_modal not in page.overlay:
-                page.overlay.append(self.full_screen_modal)
-            self.full_screen_modal.visible = True
+            if self.filter_modal not in page.overlay:
+                page.overlay.append(self.filter_modal)
+            self.filter_modal.visible = True
             page.update()
 
     def _close_filter_modal(self, e=None):
-        self.full_screen_modal.visible = False
+        self.filter_modal.visible = False
         page = self._get_page(e)
         if page:
             page.update()
@@ -342,14 +343,28 @@ class GlassDataTable(ft.Stack):
     def _handle_delete(self, e):
         item = self.selected_item
         self._close_detail_modal(e)
+
         if self.on_delete and item:
-            self.on_delete(item)
+            success, message = self.on_delete(item)
+            page = self._get_page(e)
+
+            if success:
+                Toast.success(page, message)
+            else:
+                Toast.error(page, message)
 
     def _handle_edit(self, e):
         item = self.selected_item
         self._close_detail_modal(e)
+
         if self.on_edit and item:
-            self.on_edit(item)
+            success, message = self.on_edit(item)
+            page = self._get_page(e)
+
+            if success:
+                Toast.success(page, message)
+            else:
+                Toast.error(page, message)
 
     # Construcccion de la tabla
     @staticmethod

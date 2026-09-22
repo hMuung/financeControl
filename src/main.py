@@ -72,7 +72,15 @@ def main(page: ft.Page):
         ),
     )
 
-    page.overlay.extend([Background(), safe_content])
+    app_layout = ft.Stack(
+        expand=True,
+        controls=[
+            Background(),
+            safe_content,
+        ],
+    )
+
+    page.add(app_layout)
 
 
 if __name__ == "__main__":

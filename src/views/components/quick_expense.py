@@ -41,7 +41,14 @@ class QuickExpenseCard(GlassCard):
             options_list=["Efectivo", "Tarjeta de Débito", "Tarjeta de Crédito"],
         )
 
-        # 4. Boton Añadir
+        # 4. Campo Descripcion (Opcional)
+        self.txt_description = StyledTextField(
+            label="Descripcion",
+            hint_text="Detalle o nota adicional...",
+            prefix_icon=ft.Icons.DESCRIPTION_OUTLINED,
+        )
+
+        # 5. Boton Añadir
         self.btn_add = GradientButton(
             text="Añadir",
             gradient=BUTTON_GRADIENT,
@@ -68,6 +75,7 @@ class QuickExpenseCard(GlassCard):
                     self.dd_category,
                     self.txt_amount,
                     self.dd_origin,
+                    self.txt_description,
                     ft.Row(
                         controls=[self.label, self.btn_add],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -82,10 +90,14 @@ class QuickExpenseCard(GlassCard):
         category = self.dd_category.value
         amount = self.txt_amount.value
         origin = self.dd_origin.value
+        description = self.txt_description.value
 
         # Proceso de la validacion y guardado
         success, message = self.controller.create_expense(
-            category=category, amount_str=amount, origin=origin
+            category=category,
+            amount_str=amount,
+            origin=origin,
+            description=description,
         )
 
         # Mostrar respuesta segun el resultado
@@ -96,6 +108,7 @@ class QuickExpenseCard(GlassCard):
             self.dd_category.clean_data()
             self.txt_amount.clean_data()
             self.dd_origin.clean_data()
+            self.txt_description.clean_data()
         else:
             self.label.color = ft.Colors.RED_400
 
