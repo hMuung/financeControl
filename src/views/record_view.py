@@ -1,8 +1,7 @@
-# src/views/record_view.py
 import flet as ft
 
 from controllers.expense_controller import ExpenseController
-from views.components.common.glass_table import GlassDataTable
+from views.components.glass_table import GlassDataTable
 from views.components.common.header import Header
 from views.utils.theme import HEADER_TEXT_COLOR
 
@@ -11,18 +10,16 @@ class RecordView(ft.Column):
     def __init__(self):
         self.controller = ExpenseController()
 
-        # Definición flexible de las columnas
-        columns_config = [
-            {"label": "Fecha", "key": "date", "numeric": False},
-            {"label": "Categoría", "key": "category", "numeric": False},
-            {"label": "Monto", "key": "amount", "numeric": True},
-            {"label": "Origen", "key": "origin", "numeric": False},
-        ]
-
-        # Instancia de la tabla estilizada reutilizable
+        # Instancia de la tabla con los manejadores de eventos
         self.glass_table = GlassDataTable(
-            columns_config=columns_config,
-            empty_message="No hay gastos registrados aún.",
+            title="Gastos",
+            categories_options=["Comida", "Transporte", "Servicios", "Hogar", "Entretenimiento"],
+            origins_options=["Efectivo", "Tarjeta de Débito", "Tarjeta de Crédito"],
+            empty_message="No hay gastos que coincidan con los filtros.",
+            min_amount_limit=0.0,
+            max_amount_limit=5000.0,
+            on_delete=self.handle_delete_expense,
+            on_edit=self.handle_edit_expense,
         )
 
         super().__init__(
@@ -37,7 +34,7 @@ class RecordView(ft.Column):
                         size=28,
                     ),
                 ),
-                self.glass_table,  # <--- Agregamos el componente reutilizable
+                self.glass_table,
             ],
         )
 
@@ -45,18 +42,28 @@ class RecordView(ft.Column):
         self.load_history()
 
     def load_history(self):
-        """Obtiene las entidades Expense del controller y las pasa en formato dict a la tabla."""
         expenses = self.controller.fetch_history()
 
-        # Mapeo de objetos Expense a lista de dicts
         table_data = [
             {
+                "id": getattr(exp, "id", None),
                 "date": exp.date,
                 "category": exp.category,
                 "amount": exp.amount,
                 "origin": exp.origin,
+                "description": getattr(exp, "description", ""),
             }
             for exp in expenses
         ]
 
         self.glass_table.update_data(table_data)
+
+    def handle_delete_expense(self, item: dict):
+        # Logica para eliminar el registro en la base de datos a travas del controlador
+        if "id" in item and hasattr(self.controller, "delete_expense"):
+            self.controller.delete_expense(item["id"])
+        self.load_history()
+
+    def handle_edit_expense(self, item: dict):
+        # Logica para abrir el formulario o dialogo de edicion
+        print(f"Modificar elemento: {item}")

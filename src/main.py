@@ -34,7 +34,7 @@ def main(page: ft.Page):
         ],
     )
 
-    # Auxiliar para ecargar la vista del historial
+    # Auxiliar para recargar la vista del historial
     def check_and_reload(index: int):
         if index == 1:
             record_view.load_history()

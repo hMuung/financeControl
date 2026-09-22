@@ -60,7 +60,7 @@ class ModernGlassBottomBar(ft.Container):
                 item["label"],
                 color=ft.Colors.WHITE,
                 weight=ft.FontWeight.BOLD,
-                size=13,
+                size=11,
                 visible=is_selected,
             )
 
