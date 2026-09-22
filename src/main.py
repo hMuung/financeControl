@@ -22,9 +22,10 @@ def main(page: ft.Page):
         expand=True,
         controls=[
             HomeView(),
-            EmptyView("Explorar"),
-            EmptyView("Favoritos"),
-            EmptyView("Perfil"),
+            EmptyView("Historial"),
+            EmptyView("Proyeccion"),
+            EmptyView("Analisis"),
+            EmptyView("Mas"),
         ],
     )
 

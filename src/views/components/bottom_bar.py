@@ -17,9 +17,10 @@ class ModernGlassBottomBar(ft.Container):
         # Items
         self.items_data = [
             {"icon": ft.Icons.HOME_ROUNDED, "label": "Inicio"},
-            {"icon": ft.Icons.EXPLORE_ROUNDED, "label": "Explorar"},
-            {"icon": ft.Icons.FAVORITE_ROUNDED, "label": "Favoritos"},
-            {"icon": ft.Icons.PERSON_ROUNDED, "label": "Perfil"},
+            {"icon": ft.Icons.RECEIPT_LONG_ROUNDED, "label": "Historial"},
+            {"icon": ft.Icons.TRENDING_UP_ROUNDED, "label": "Proyeccion"},
+            {"icon": ft.Icons.DONUT_LARGE_ROUNDED, "label": "Analisis"},
+            {"icon": ft.Icons.MORE_HORIZ_ROUNDED, "label": "Mas"},
         ]
 
         self.item_controls = []
