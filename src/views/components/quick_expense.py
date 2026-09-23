@@ -7,6 +7,7 @@ from views.components.common.gradient_button import GradientButton
 from views.components.common.styled_dropdown import StyledDropdown
 from views.components.common.styled_textfield import StyledTextField
 from views.utils.theme import BUTTON_GRADIENT
+from views.utils.toast import Toast
 
 
 class QuickExpenseCard(GlassCard):
@@ -44,7 +45,7 @@ class QuickExpenseCard(GlassCard):
         # 4. Campo Descripcion (Opcional)
         self.txt_description = StyledTextField(
             label="Descripcion",
-            hint_text="Detalle o nota adicional...",
+            hint_text="Nota adicional...",
             prefix_icon=ft.Icons.DESCRIPTION_OUTLINED,
         )
 
@@ -56,10 +57,6 @@ class QuickExpenseCard(GlassCard):
             on_click=self._on_add_click,
         )
 
-        # Etiqueta para mostrar mensajes
-        self.label = ft.Text(
-            value="", color=ft.Colors.RED_400, size=16, weight=ft.FontWeight.W_500
-        )
 
         # Estructura visual del componente
         super().__init__(
@@ -77,8 +74,8 @@ class QuickExpenseCard(GlassCard):
                     self.dd_origin,
                     self.txt_description,
                     ft.Row(
-                        controls=[self.label, self.btn_add],
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[self.btn_add],
+                        alignment=ft.MainAxisAlignment.END,
                         vertical_alignment=ft.CrossAxisAlignment.CENTER,
                     ),
                 ],
@@ -101,15 +98,14 @@ class QuickExpenseCard(GlassCard):
         )
 
         # Mostrar respuesta segun el resultado
-        self.label.value = message
         if success:
-            self.label.color = ft.Colors.GREEN_400
+            Toast.success(self.page,message)
             # Limpiar entradas de la UI
             self.dd_category.clean_data()
             self.txt_amount.clean_data()
             self.dd_origin.clean_data()
             self.txt_description.clean_data()
         else:
-            self.label.color = ft.Colors.RED_400
+            Toast.error(self.page,message)
 
         self.update()

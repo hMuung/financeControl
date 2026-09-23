@@ -8,7 +8,7 @@ class ExpenseController:
 
     def create_expense(self, category: str, amount_str: str, origin: str, description: str = ""):
         if not category or not amount_str or not origin:
-            return False, "Todos los campos son obligatorios."
+            return False, "Faltan campos obligatorios."
 
         try:
             amount = float(amount_str)

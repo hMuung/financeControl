@@ -1,3 +1,4 @@
+# src/views/components/common/styled_textfield.py
 import flet as ft
 
 class StyledTextField(ft.TextField):
@@ -10,6 +11,8 @@ class StyledTextField(ft.TextField):
         border_radius: int = 16,
         focused_color: str = ft.Colors.BLUE,
         expand: bool = True,
+        dense: bool = True,
+        content_padding: ft.Padding | None = ft.Padding.all(0),
         **kwargs,
     ):
         custom_border = {
@@ -31,6 +34,8 @@ class StyledTextField(ft.TextField):
             filled=True,
             expand=expand,
             border=custom_border,
+            dense=dense,
+            content_padding=content_padding,
             **kwargs,
         )
 

@@ -1,3 +1,4 @@
+# src/views/components/common/styled_dropdown.py
 import flet as ft
 
 
@@ -12,6 +13,7 @@ class StyledDropdown(ft.Dropdown):
         focused_color: str = ft.Colors.BLUE,
         expand: bool = True,
         dense: bool = True,
+        content_padding: ft.Padding | None = ft.Padding.all(0),
         on_change=None,
         **kwargs,
     ):
@@ -104,6 +106,7 @@ class StyledDropdown(ft.Dropdown):
             menu_style=custom_menu_style,
             options=formatted_options,
             on_select=self._internal_on_select,
+            content_padding=content_padding,
             **kwargs,
         )
 
