@@ -1,4 +1,3 @@
-# src/views/components/expenses_record_table.py
 import flet as ft
 
 from views.components.common.glass_table import GlassDataTable 
@@ -29,11 +28,13 @@ class GastosGlassTable(GlassDataTable):
         on_delete=None,
         on_edit=None,
     ):
+
+        # Total = 2 + 3 + 2 + 3 = 10 (Equivale a 20%, 30%, 30%, 20%)
         columns_config = columns_config or [
-            {"label": "Fecha", "key": "date", "numeric": False},
-            {"label": "Categoría", "key": "category", "numeric": False},
-            {"label": "Monto", "key": "amount", "numeric": True},
-            {"label": "Origen", "key": "origin", "numeric": False},
+            {"label": "Fecha", "key": "date", "numeric": False, "expand": 2},
+            {"label": "Categoría", "key": "category", "numeric": False, "expand": 3},
+            {"label": "Monto", "key": "amount", "numeric": True, "expand": 3},
+            {"label": "Origen", "key": "origin", "numeric": False, "expand": 2},
         ]
 
         self.on_delete = on_delete
@@ -110,7 +111,7 @@ class GastosGlassTable(GlassDataTable):
         )
         self.edit_tf_amount = StyledTextField(
             label="Monto",
-            hint_text="0.00",
+            hint_text="0",
             prefix_icon=ft.Icons.ATTACH_MONEY,
             keyboard_type=ft.KeyboardType.NUMBER,
         )
@@ -163,7 +164,6 @@ class GastosGlassTable(GlassDataTable):
             ),
         )
 
-    # Ciclo de vida para overlay de modales
     def did_mount(self):
         if self.page and self.detail_modal not in self.page.overlay:
             self.page.overlay.append(self.detail_modal)
@@ -172,7 +172,6 @@ class GastosGlassTable(GlassDataTable):
         if self.page and self.detail_modal in self.page.overlay:
             self.page.overlay.remove(self.detail_modal)
 
-    # Handlers y Control de Modales
     def _open_filter_modal(self, e=None):
         self.filter_modal.open(e)
 
@@ -182,7 +181,7 @@ class GastosGlassTable(GlassDataTable):
         self.detail_modal_content.controls = [
             self._build_info_row("Fecha:", self._format_date(item.get("date", ""))),
             self._build_info_row("Categoría:", str(item.get("category", "-"))),
-            self._build_info_row("Monto:", f"${num_val:.2f}"),
+            self._build_info_row("Monto:", f"${int(round(num_val)):,}"),
             self._build_info_row("Origen:", str(item.get("origin", "-"))),
             ft.Divider(height=1, color=ft.Colors.WHITE_24),
             ft.Column(
@@ -219,7 +218,8 @@ class GastosGlassTable(GlassDataTable):
 
         self.edit_dd_category.value = str(cat_match[0]) if cat_match else None
         self.edit_dd_origin.value = str(orig_match[0]) if orig_match else None
-        self.edit_tf_amount.value = str(item.get("amount", ""))
+        num_val = self._parse_amount(item.get("amount", 0))
+        self.edit_tf_amount.value = str(int(round(num_val)))
         self.edit_tf_description.value = str(item.get("description", ""))
 
         self.detail_modal.close(e)

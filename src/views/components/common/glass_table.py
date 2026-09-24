@@ -1,4 +1,3 @@
-# src/views/components/common/glass_table.py
 import flet as ft
 
 from views.components.common.glass_card import GlassCard
@@ -120,7 +119,7 @@ class GlassDataTable(ft.Stack):
                     text_align=ft.TextAlign.CENTER,
                 ),
                 alignment=ft.Alignment.CENTER,
-                expand=1,
+                expand=col.get("expand", 1),
             )
             for col in self.columns_config
         ]
@@ -154,7 +153,7 @@ class GlassDataTable(ft.Stack):
                 text_val = self._format_date(val)
             elif col.get("numeric"):
                 num_val = self._parse_amount(val)
-                text_val = f"${num_val:.2f}"
+                text_val = f"${int(round(num_val)):,}"
             else:
                 text_val = str(val) if val is not None else ""
 
@@ -169,7 +168,7 @@ class GlassDataTable(ft.Stack):
                         overflow=ft.TextOverflow.ELLIPSIS,
                     ),
                     alignment=ft.Alignment.CENTER_LEFT,
-                    expand=1,
+                    expand=col.get("expand", 1),
                 )
             )
 
@@ -178,7 +177,6 @@ class GlassDataTable(ft.Stack):
             padding=ft.Padding.symmetric(vertical=6, horizontal=8),
             border_radius=4,
             ink=True,
-            #on_click=lambda e, data_item=item: self._handle_row_click(e, data_item),
             on_long_press=lambda e, data_item=item: self._handle_row_click(e, data_item),
         )
 
@@ -208,7 +206,7 @@ class GlassDataTable(ft.Stack):
                 text_val = self._format_date(val)
             elif col.get("numeric"):
                 num_val = self._parse_amount(val)
-                text_val = f"${num_val:.2f}"
+                text_val = f"${int(round(num_val)):,}"
             else:
                 text_val = str(val) if val is not None else ""
 
@@ -247,4 +245,3 @@ class GlassDataTable(ft.Stack):
         if self.page:
             self.list_view.update()
             self.title_text_control.update()
-
