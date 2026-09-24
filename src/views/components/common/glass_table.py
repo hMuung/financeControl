@@ -92,7 +92,7 @@ class GlassDataTable(ft.Stack):
             return 0.0
 
     @staticmethod
-    def _format_date(val) -> str:
+    def _format_date(val, short_year: bool = False) -> str:
         if not val:
             return ""
         val_str = str(val).strip()
@@ -100,7 +100,8 @@ class GlassDataTable(ft.Stack):
             clean_val = val_str.split("T")[0].split(" ")[0]
             parts = clean_val.split("-")
             if len(parts) == 3 and len(parts[0]) == 4:
-                return f"{parts[2]}/{parts[1]}/{parts[0]}"
+                year = parts[0][-2:] if short_year else parts[0]
+                return f"{parts[2]}/{parts[1]}/{year}"
         except Exception:
             pass
         return val_str
@@ -150,7 +151,7 @@ class GlassDataTable(ft.Stack):
             val = item.get(key, "")
 
             if key == "date" or col.get("is_date"):
-                text_val = self._format_date(val)
+                text_val = self._format_date(val, short_year=True)
             elif col.get("numeric"):
                 num_val = self._parse_amount(val)
                 text_val = f"${int(round(num_val)):,}"
@@ -203,7 +204,7 @@ class GlassDataTable(ft.Stack):
             val = item.get(key, "")
 
             if key == "date" or col.get("is_date"):
-                text_val = self._format_date(val)
+                text_val = self._format_date(val, short_year=True)
             elif col.get("numeric"):
                 num_val = self._parse_amount(val)
                 text_val = f"${int(round(num_val)):,}"
@@ -213,7 +214,7 @@ class GlassDataTable(ft.Stack):
             if idx < len(row_cells):
                 row_cells[idx].content.value = text_val
 
-        row_ctrl.on_click = lambda e, data_item=item: self._handle_row_click(e, data_item)
+        #row_ctrl.on_click = lambda e, data_item=item: self._handle_row_click(e, data_item)
         row_ctrl.on_long_press = lambda e, data_item=item: self._handle_row_click(e, data_item)
 
     def update_data(self, new_data: list[dict]):

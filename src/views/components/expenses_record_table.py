@@ -179,7 +179,7 @@ class GastosGlassTable(GlassDataTable):
         num_val = self._parse_amount(item.get("amount", 0))
 
         self.detail_modal_content.controls = [
-            self._build_info_row("Fecha:", self._format_date(item.get("date", ""))),
+            self._build_info_row("Fecha:", self._format_date(item.get("date", ""), short_year=False)),
             self._build_info_row("Categoría:", str(item.get("category", "-"))),
             self._build_info_row("Monto:", f"${int(round(num_val)):,}"),
             self._build_info_row("Origen:", str(item.get("origin", "-"))),
