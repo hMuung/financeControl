@@ -112,6 +112,7 @@ class GastosGlassTable(GlassDataTable):
         self.edit_tf_amount = StyledTextField(
             label="Monto",
             hint_text="0",
+            format_numeric=True,
             prefix_icon=ft.Icons.ATTACH_MONEY,
             keyboard_type=ft.KeyboardType.NUMBER,
         )
@@ -216,10 +217,25 @@ class GastosGlassTable(GlassDataTable):
         cat_match = next((c for c in self.categories_options if len(c) > 1 and c[1] == item.get("category")), None)
         orig_match = next((o for o in self.origins_options if len(o) > 1 and o[1] == item.get("origin")), None)
 
-        self.edit_dd_category.value = str(cat_match[0]) if cat_match else None
-        self.edit_dd_origin.value = str(orig_match[0]) if orig_match else None
+        if cat_match:
+            self.edit_dd_category.value = str(cat_match[0])
+            if len(cat_match) >= 4:
+                self.edit_dd_category.color = cat_match[2]
+                self.edit_dd_category.fill_color = cat_match[3]
+        else:
+            self.edit_dd_category.value = None
+
+        if orig_match:
+            self.edit_dd_origin.value = str(orig_match[0])
+            if len(orig_match) >= 4:
+                self.edit_dd_origin.color = orig_match[2]
+                self.edit_dd_origin.fill_color = orig_match[3]
+        else:
+            self.edit_dd_origin.value = None
+
         num_val = self._parse_amount(item.get("amount", 0))
-        self.edit_tf_amount.value = str(int(round(num_val)))
+        self.edit_tf_amount.value = f"{int(round(num_val)):,}"
+        
         self.edit_tf_description.value = str(item.get("description", ""))
 
         self.detail_modal.close(e)

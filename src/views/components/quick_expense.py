@@ -43,6 +43,7 @@ class QuickExpenseCard(GlassCard):
         self.txt_amount = StyledTextField(
             label="Monto",
             hint_text="0.00",
+            format_numeric=True,
             keyboard_type=ft.KeyboardType.NUMBER,
             prefix_icon=ft.Icons.ATTACH_MONEY,
         )

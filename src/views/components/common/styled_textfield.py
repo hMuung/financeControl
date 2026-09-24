@@ -1,6 +1,7 @@
 # src/views/components/common/styled_textfield.py
 import flet as ft
 
+
 class StyledTextField(ft.TextField):
     def __init__(
         self,
@@ -13,8 +14,13 @@ class StyledTextField(ft.TextField):
         expand: bool = True,
         dense: bool = True,
         content_padding: ft.Padding | None = ft.Padding.all(0),
+        format_numeric: bool = False,
+        on_change=None,
         **kwargs,
     ):
+        self.format_numeric = format_numeric
+        self._user_on_change = on_change
+
         custom_border = {
             ft.ControlState.DEFAULT: ft.OutlineInputBorder(
                 border_radius=border_radius,
@@ -36,8 +42,21 @@ class StyledTextField(ft.TextField):
             border=custom_border,
             dense=dense,
             content_padding=content_padding,
+            on_change=self._on_text_change,
             **kwargs,
         )
+
+    def _on_text_change(self, e):
+        if self.format_numeric:
+            digits = "".join(c for c in (self.value or "") if c.isdigit())
+            if digits:
+                self.value = f"{int(digits):,}"
+            else:
+                self.value = ""
+            self.update()
+
+        if self._user_on_change:
+            self._user_on_change(e)
 
     def clean_data(self):
         self.value = None

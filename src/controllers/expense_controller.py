@@ -22,7 +22,8 @@ class ExpenseController:
             return False, "Faltan campos obligatorios."
 
         try:
-            amount = float(amount_str)
+            clean_amount = str(amount_str).replace(",", "").strip()
+            amount = float(clean_amount)
             if amount <= 0:
                 return False, "El monto debe ser mayor a 0."
         except ValueError:
@@ -74,7 +75,8 @@ class ExpenseController:
             return False, "Faltan campos obligatorios."
 
         try:
-            amount = float(amount_str)
+            clean_amount = str(amount_str).replace(",", "").strip()
+            amount = float(clean_amount)
             if amount <= 0:
                 return False, "El monto debe ser mayor a 0."
         except ValueError:
