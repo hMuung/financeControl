@@ -4,6 +4,10 @@ from services.expense_service import ExpenseService
 
 
 class ExpenseController:
+
+    # Atributo de clase compartido
+    _is_dirty: bool = True
+
     def __init__(self):
         self.service = ExpenseService()
 
@@ -44,6 +48,7 @@ class ExpenseController:
         return self.service.get_all()
 
     def delete_expense(self, expense_id: int) -> tuple[bool, str]:
+        ExpenseController._is_dirty = True
         if not expense_id:
             return False, "ID de registro no válido."
 
@@ -60,6 +65,7 @@ class ExpenseController:
         origin_id: int,
         description: str = "",
     ) -> tuple[bool, str]:
+        
         if not expense_id:
             return False, "ID de registro no válido."
 
@@ -88,5 +94,14 @@ class ExpenseController:
         )
 
         if self.service.update(expense):
+            ExpenseController._is_dirty = True
             return True, "Gasto actualizado correctamente."
         return False, "No se pudo actualizar el registro."
+
+    @classmethod
+    def mark_clean(cls):
+        cls._is_dirty = False
+
+    @classmethod
+    def is_dirty(cls) -> bool:
+        return cls._is_dirty

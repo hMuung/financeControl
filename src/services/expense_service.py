@@ -9,6 +9,9 @@ class ExpenseService:
         self.db_name = db_name
         self._init_db()
 
+        # Atributo de clase compartido
+        _is_dirty: bool = True
+
     def _init_db(self):
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
