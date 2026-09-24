@@ -190,6 +190,13 @@ class GlassDataTable(ft.Stack):
             horizontal_margin=8,
         )
 
+        self.title_text_control = ft.Text(
+            value=f"{self.title_text} ({len(self.data)})",
+            size=18,
+            weight=ft.FontWeight.BOLD,
+            color=HEADER_TEXT_COLOR,
+        )
+
         self.glass_card = GlassCard(
             content=ft.Column(
                 spacing=6,
@@ -198,12 +205,7 @@ class GlassDataTable(ft.Stack):
                     ft.Row(
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         controls=[
-                            ft.Text(
-                                self.title_text,
-                                size=18,
-                                weight=ft.FontWeight.BOLD,
-                                color=HEADER_TEXT_COLOR,
-                            ),
+                            self.title_text_control,
                             btn_filter_trigger,
                         ],
                     ),
@@ -346,8 +348,9 @@ class GlassDataTable(ft.Stack):
 
                 # Eliminar solo la fila de la lista de controles de la tabla
                 self.table.rows = [r for r in self.table.rows if getattr(r, "data", None) != item_id]
-                
-                self.table.update()
+
+                self._update_title_count()
+                self.update()
             else:
                 Toast.error(page, message)
 
@@ -409,11 +412,9 @@ class GlassDataTable(ft.Stack):
             self._close_edit_modal(e)
             self._open_detail_modal(e, self.selected_item)
 
-
     def _handle_cancel(self,e):
         self._close_edit_modal(e)
         self._open_detail_modal(e,self.selected_item)
-
 
     # Construcccion de la tabla
     @staticmethod
@@ -441,6 +442,9 @@ class GlassDataTable(ft.Stack):
         except Exception:
             pass
         return val_str
+
+    def _update_title_count(self):
+        self.title_text_control.value = f"{self.title_text} ({len(self.data)})"
 
     def _build_columns(self) -> list[fdt.DataColumn2]:
         cols = []
@@ -509,5 +513,6 @@ class GlassDataTable(ft.Stack):
     def update_data(self, new_data: list[dict]):
         self.data = new_data
         self.table.rows = self._build_rows()
+        self._update_title_count()
         if self.page:
             self.update()
