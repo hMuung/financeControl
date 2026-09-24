@@ -8,7 +8,7 @@ class StyledDropdown(ft.Dropdown):
         label: str | None = None,
         hint_text: str | None = None,
         leading_icon: str | None = None,
-        options_list: list[str | tuple[str, str, str] | tuple[str, str] | dict | ft.dropdown.Option] | None = None,
+        options_list: list[tuple[int | str, str, str, str] | tuple[int | str, str] ] | None = None,
         border_radius: int = 16,
         focused_color: str = ft.Colors.BLUE,
         expand: bool = True,
@@ -39,31 +39,26 @@ class StyledDropdown(ft.Dropdown):
         formatted_options = []
         if options_list:
             for opt in options_list:
-                if isinstance(opt, ft.dropdown.Option):
-                    formatted_options.append(opt)
+                if not isinstance(opt, (tuple, list)):
                     continue
 
-                text_val = ""
-                key_val = ""
                 text_color = None
                 bg_color = None
 
-                # Formato Tupla/Lista: ("Texto", "color_texto", "color_fondo")
-                if isinstance(opt, (tuple, list)):
-                    text_val = key_val = opt[0]
-                    text_color = opt[1] if len(opt) > 1 else None
-                    bg_color = opt[2] if len(opt) > 2 else None
+                # Tupla de 4 elementos -> (key, text, color, bg_color)
+                if len(opt) == 4:
+                    key_val = str(opt[0])
+                    text_val = str(opt[1])
+                    text_color = opt[2]
+                    bg_color = opt[3]
 
-                # Formato Diccionario
-                elif isinstance(opt, dict):
-                    text_val = opt.get("text", opt.get("key", ""))
-                    key_val = opt.get("key", text_val)
-                    text_color = opt.get("color", opt.get("text_color"))
-                    bg_color = opt.get("bgcolor", opt.get("bg_color"))
+                # Tupla de 2 elementos -> (key, text)
+                elif len(opt) == 2:
+                    key_val = str(opt[0])
+                    text_val = str(opt[1])
 
-                # Formato String simple
-                elif isinstance(opt, str):
-                    text_val = key_val = opt
+                else:
+                    continue
 
                 # Guarda los colores asociados a la clave
                 self._option_colors[key_val] = {
@@ -109,6 +104,14 @@ class StyledDropdown(ft.Dropdown):
             content_padding=content_padding,
             **kwargs,
         )
+
+    @property
+    def key(self):
+        return self.value
+
+    @key.setter
+    def key(self, val):
+        self.value = str(val) if val is not None else None
 
     def clean_data(self):
         self.value = None

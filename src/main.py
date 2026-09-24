@@ -1,15 +1,49 @@
 # src/main.py
 import flet as ft
+import os
+from pathlib import Path
 
-from config import APP_ICON_PATH, BASE_DIR
+from config import APP_ICON_PATH, BASE_DIR, DB_NAME
+
 from views.components.background import Background
 from views.components.bottom_bar import ModernGlassBottomBar
+
 from views.empty_view import EmptyView
 from views.home_view import HomeView
 from views.record_view import RecordView
 
+from services.category_service import CategoryService
+from services.origin_service import OriginService
+from services.expense_service import ExpenseService
+
+
+def init_database():
+    """Elimina la DB existente y la vuelve a instanciar con sus seeds."""
+    db_path = Path(DB_NAME)
+
+    # 1. Eliminar archivo de la DB si existe
+    if db_path.exists():
+        try:
+            os.remove(db_path)
+            print(f"[DEV] Base de datos '{DB_NAME}' eliminada para Hot Reload.")
+        except Exception as e:
+            print(f"[DEV] Error al borrar la base de datos: {e}")
+
+    # 2. Eliminar archivos temporales de SQLite si se crearon (WAL / SHM)
+    for extra in [Path(f"{DB_NAME}-wal"), Path(f"{DB_NAME}-shm")]:
+        if extra.exists():
+            os.remove(extra)
+            
+    """Inicializa la DB y carga las seeds en el orden de dependencias."""
+    CategoryService()._seed_if_empty()
+    OriginService()._seed_if_empty()
+    ExpenseService()._seed_if_empty()
+
 
 def main(page: ft.Page):
+
+    init_database()
+
     page.theme_mode = ft.ThemeMode.LIGHT
     page.platform = ft.PagePlatform.ANDROID
     page.window.resizable = False

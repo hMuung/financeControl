@@ -14,6 +14,24 @@ BUTTON_GRADIENT = ft.LinearGradient(
     colors=["#FFA07A", "#FF7F50"],
 )
 
+CANCEL_GRADIENT = ft.LinearGradient(
+    begin=ft.Alignment(-1, 0),
+    end=ft.Alignment(1, 0),
+    colors=["#B91515", "#FB3838"],
+)
+
+ACCEPT_GRADIENT = ft.LinearGradient(
+    begin=ft.Alignment(-1, 0),
+    end=ft.Alignment(1, 0),
+    colors=["#37A93E", "#58DB88"],
+)
+
+MODAL_SHADOW = ft.BoxShadow(
+    blur_radius=30,
+    color=ft.Colors.BLACK_45,
+    offset=ft.Offset(0, 10),
+)
+
 # Valores del header
 HEADER_TEXT_COLOR = "#2D3748"
 

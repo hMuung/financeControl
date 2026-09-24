@@ -48,5 +48,5 @@ class GradientButton(ft.Container):
             width=width,
             height=height,
             disabled=disabled,
-            **kwargs  # Permite pasar expand, margin, tooltip, etc.
+            **kwargs
         )

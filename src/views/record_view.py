@@ -49,26 +49,31 @@ class RecordView(ft.Column):
             {
                 "id": getattr(exp, "id", None),
                 "date": exp.date,
-                "category": exp.category,
+                "category": exp.category_name,
                 "amount": exp.amount,
-                "origin": exp.origin,
+                "origin": exp.origin_name,
                 "description": getattr(exp, "description", ""),  
-
             }
             for exp in expenses
         ]
 
         self.glass_table.update_data(table_data)
+        
 
     def handle_delete_expense(self, item: dict):
-        # Logica para eliminar el registro en la base de datos a travas del controlador
-        succcess, message = False, "Error al eliminar gasto"
-        if "id" in item and hasattr(self.controller, "delete_expense"):
-            succcess, message = self.controller.delete_expense(item["id"])
-        self.load_history()
-
-        return succcess, message
+        success, message = False, "Error al eliminar gasto"
+        
+        # Validar que exista el id y no sea None
+        expense_id = item.get("id")
+        if expense_id is not None and hasattr(self.controller, "delete_expense"):
+            success, message = self.controller.delete_expense(expense_id)
+            if success:
+                self.load_history()  # Recargar datos si se eliminó con éxito
+                
+        return success, message
 
     def handle_edit_expense(self, item: dict):  
-        # Logica para abrir el formulario o dialogo de edicion
-        return True, f"Modificar elemento: {item}"
+        pass
+
+    def save_edited_expense(self, updated_item: dict):
+        pass

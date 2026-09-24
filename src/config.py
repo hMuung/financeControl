@@ -15,4 +15,7 @@ ICONS_DIR = ASSETS_DIR / "icon"
 APP_LOGO_PATH = ICONS_DIR / "icon.png"
 APP_ICON_PATH = ICONS_DIR / "appIcon.png"
 
+
+DB_NAME = "finance_control.db"
+
 print("New Start")

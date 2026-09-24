@@ -1,13 +1,20 @@
 # src/controllers/expense_controller.py
-from models.expense_model import Expense
+from models.models import Expense
 from services.expense_service import ExpenseService
+
 
 class ExpenseController:
     def __init__(self):
         self.service = ExpenseService()
 
-    def create_expense(self, category: str, amount_str: str, origin: str, description: str = ""):
-        if not category or not amount_str or not origin:
+    def create_expense(
+        self,
+        category_id: int,
+        amount_str: str,
+        origin_id: int,
+        description: str = "",
+    ) -> tuple[bool, str]:
+        if not category_id or not amount_str or not origin_id:
             return False, "Faltan campos obligatorios."
 
         try:
@@ -15,15 +22,20 @@ class ExpenseController:
             if amount <= 0:
                 return False, "El monto debe ser mayor a 0."
         except ValueError:
-            return False, "El monto debe ser un numero valido."
+            return False, "El monto debe ser un número válido."
 
-        desc_clean = description.strip() if description and description.strip() else "Sin descripción"
+        desc_clean = (
+            description.strip()
+            if description and description.strip()
+            else "Sin descripción"
+        )
 
         new_expense = Expense(
-            category=category,
+            
+            category_id=category_id,
+            origin_id=origin_id,
             amount=amount,
-            origin=origin,
-            description=desc_clean
+            description=desc_clean,
         )
         self.service.save(new_expense)
         return True, "Registro correcto."
@@ -33,9 +45,48 @@ class ExpenseController:
 
     def delete_expense(self, expense_id: int) -> tuple[bool, str]:
         if not expense_id:
-            return False, "ID de registro no valido."
+            return False, "ID de registro no válido."
 
         success = self.service.delete(expense_id)
         if success:
             return True, "Registro eliminado correctamente."
         return False, "No se pudo eliminar el registro."
+
+    def update_expense(
+        self,
+        expense_id: int,
+        category_id: int,
+        amount_str: str,
+        origin_id: int,
+        description: str = "",
+    ) -> tuple[bool, str]:
+        if not expense_id:
+            return False, "ID de registro no válido."
+
+        if not category_id or not amount_str or not origin_id:
+            return False, "Faltan campos obligatorios."
+
+        try:
+            amount = float(amount_str)
+            if amount <= 0:
+                return False, "El monto debe ser mayor a 0."
+        except ValueError:
+            return False, "El monto debe ser un número válido."
+
+        desc_clean = (
+            description.strip()
+            if description and description.strip()
+            else "Sin descripción"
+        )
+
+        expense = Expense(
+            id=expense_id,
+            category_id=category_id,
+            origin_id=origin_id,
+            amount=amount,
+            description=desc_clean,
+        )
+
+        if self.service.update(expense):
+            return True, "Gasto actualizado correctamente."
+        return False, "No se pudo actualizar el registro."
