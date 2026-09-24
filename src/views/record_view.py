@@ -2,6 +2,8 @@
 import flet as ft
 
 from controllers.expense_controller import ExpenseController
+from controllers.category_controller import CategoryController
+from controllers.origin_controller import OriginController
 from views.components.glass_table import GlassDataTable
 from views.components.common.header import Header
 from views.utils.theme import HEADER_TEXT_COLOR
@@ -10,15 +12,29 @@ from views.utils.theme import HEADER_TEXT_COLOR
 class RecordView(ft.Column):
     def __init__(self):
         self.controller = ExpenseController()
+        self.controller = ExpenseController()
+        self.category_controller = CategoryController()
+        self.origin_controller = OriginController()
+
+        # Obtener datos de la DB
+        categories = self.category_controller.get_all_categories()
+        origins = self.origin_controller.get_all_origins()
+
+        # Obtener datos desde la base de datos
+        category_options = [
+            (cat.id, cat.name, cat.color, cat.bg_color) for cat in categories
+        ]
+        
+        origin_options = [
+            (orig.id, orig.name, orig.color, orig.bg_color) for orig in origins
+        ]
 
         # Instancia de la tabla con los manejadores de eventos
         self.glass_table = GlassDataTable(
             title="Gastos",
-            categories_options=["Comida", "Transporte", "Servicios", "Hogar", "Entretenimiento"],
-            origins_options=["Efectivo", "Tarjeta de Débito", "Tarjeta de Crédito"],
-            empty_message="No hay gastos que coincidan con los filtros.",
-            min_amount_limit=0.0,
-            max_amount_limit=5000.0,
+            categories_options=category_options,
+            origins_options=origin_options,
+            empty_message="No hay gastos que coincidan.",
             on_delete=self.handle_delete_expense,
             on_edit=self.handle_edit_expense,
         )
@@ -44,7 +60,6 @@ class RecordView(ft.Column):
 
     def load_history(self):
         expenses = self.controller.fetch_history()
-
         table_data = [
             {
                 "id": getattr(exp, "id", None),
@@ -56,9 +71,7 @@ class RecordView(ft.Column):
             }
             for exp in expenses
         ]
-
         self.glass_table.update_data(table_data)
-        
 
     def handle_delete_expense(self, item: dict):
         success, message = False, "Error al eliminar gasto"
@@ -67,13 +80,22 @@ class RecordView(ft.Column):
         expense_id = item.get("id")
         if expense_id is not None and hasattr(self.controller, "delete_expense"):
             success, message = self.controller.delete_expense(expense_id)
-            if success:
-                self.load_history()  # Recargar datos si se eliminó con éxito
                 
         return success, message
 
-    def handle_edit_expense(self, item: dict):  
-        pass
+    def handle_edit_expense(self, payload: dict):  
+        expense_id = payload.get("id")
+        category_id = payload.get("category_id")
+        origin_id = payload.get("origin_id")
+        amount_str = payload.get("amount_str")
+        description = payload.get("description", "")
 
-    def save_edited_expense(self, updated_item: dict):
-        pass
+        success, message = self.controller.update_expense(
+            expense_id=expense_id,
+            category_id=category_id,
+            amount_str=amount_str,
+            origin_id=origin_id,
+            description=description,
+        )
+
+        return success, message

@@ -18,10 +18,10 @@ from services.expense_service import ExpenseService
 
 
 def init_database():
-    """Elimina la DB existente y la vuelve a instanciar con sus seeds."""
+    """Elimina la DB existente y la vuelve a instanciar con sus seeds"""
     db_path = Path(DB_NAME)
 
-    # 1. Eliminar archivo de la DB si existe
+    # Eliminar archivo de la DB si existe
     if db_path.exists():
         try:
             os.remove(db_path)
@@ -29,12 +29,12 @@ def init_database():
         except Exception as e:
             print(f"[DEV] Error al borrar la base de datos: {e}")
 
-    # 2. Eliminar archivos temporales de SQLite si se crearon (WAL / SHM)
+    # Eliminar archivos temporales de SQLite si se crearon (WAL / SHM)
     for extra in [Path(f"{DB_NAME}-wal"), Path(f"{DB_NAME}-shm")]:
         if extra.exists():
             os.remove(extra)
-            
-    """Inicializa la DB y carga las seeds en el orden de dependencias."""
+
+    """Inicializa la DB y carga las seeds en el orden de dependencias"""
     CategoryService()._seed_if_empty()
     OriginService()._seed_if_empty()
     ExpenseService()._seed_if_empty()

@@ -82,8 +82,8 @@ class QuickExpenseCard(GlassCard):
                         alignment=ft.MainAxisAlignment.START,
                     ),
                     self.dd_category,
-                    self.txt_amount,
                     self.dd_origin,
+                    self.txt_amount,
                     self.txt_description,
                     ft.Row(
                         controls=[self.btn_add],

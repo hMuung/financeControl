@@ -26,6 +26,14 @@ ACCEPT_GRADIENT = ft.LinearGradient(
     colors=["#37A93E", "#58DB88"],
 )
 
+MODIFI_GRADIENT = ft.LinearGradient(
+    colors=[ft.Colors.BLUE_700, ft.Colors.BLUE_500]
+)
+
+DELETE_GRADIENT = ft.LinearGradient(
+    colors=[ft.Colors.RED_700, ft.Colors.RED_500]
+)
+
 MODAL_SHADOW = ft.BoxShadow(
     blur_radius=30,
     color=ft.Colors.BLACK_45,
