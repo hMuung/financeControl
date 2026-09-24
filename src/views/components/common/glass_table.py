@@ -1,3 +1,4 @@
+# src/views/components/common/glass_table.py
 import flet as ft
 
 from views.components.common.glass_card import GlassCard
@@ -21,6 +22,7 @@ class GlassDataTable(ft.Stack):
         self.empty_message = empty_message
         self.on_row_click = on_row_click
         self.selected_item = None
+        self.is_expanded = False 
 
         self.header_row = self._build_header_row()
 
@@ -40,9 +42,28 @@ class GlassDataTable(ft.Stack):
             color=HEADER_TEXT_COLOR,
         )
 
-        header_controls = [self.title_text_control]
+        # Botón de expandir / minimizar
+        self.expand_button = ft.IconButton(
+            icon=ft.Icons.FULLSCREEN,
+            icon_color=HEADER_TEXT_COLOR,
+            icon_size=25,
+            tooltip="Expandir",
+            on_click=self._toggle_expand,
+        )
+
+        # Agrupamos los botones de acción en la cabecera
+        action_controls = []
         if action_button:
-            header_controls.append(action_button)
+            action_controls.append(action_button)
+        action_controls.append(self.expand_button)
+
+        header_actions_row = ft.Row(
+            controls=action_controls,
+            spacing=4,
+            alignment=ft.MainAxisAlignment.END,
+        )
+
+        header_controls = [self.title_text_control, header_actions_row]
 
         self.glass_card = GlassCard(
             content=ft.Column(
@@ -64,15 +85,35 @@ class GlassDataTable(ft.Stack):
             )
         )
 
+        # Guardamos referencias a los dos contenedores principales
+        self.card_container = ft.Container(content=self.glass_card, expand=1)
+        self.spacer_container = ft.Container(expand=1)
+
         main_layout = ft.Column(
             expand=True,
             controls=[
-                ft.Container(content=self.glass_card, expand=1),
-                ft.Container(expand=1),
+                self.card_container,
+                self.spacer_container,
             ],
         )
 
         super().__init__(expand=True, controls=[main_layout])
+
+    def _toggle_expand(self, e):
+        self.is_expanded = not self.is_expanded
+
+        # Si está expandido, ocultamos el espaciador inferior para tomar el 100% de la pantalla
+        self.spacer_container.visible = not self.is_expanded
+
+        # Alternar icono y tooltip
+        if self.is_expanded:
+            self.expand_button.icon = ft.Icons.FULLSCREEN_EXIT
+            self.expand_button.tooltip = "Minimizar"
+        else:
+            self.expand_button.icon = ft.Icons.FULLSCREEN
+            self.expand_button.tooltip = "Expandir"
+
+        self.update()
 
     def _get_page(self, e=None):
         if e and hasattr(e, "page") and e.page:
@@ -214,7 +255,6 @@ class GlassDataTable(ft.Stack):
             if idx < len(row_cells):
                 row_cells[idx].content.value = text_val
 
-        #row_ctrl.on_click = lambda e, data_item=item: self._handle_row_click(e, data_item)
         row_ctrl.on_long_press = lambda e, data_item=item: self._handle_row_click(e, data_item)
 
     def update_data(self, new_data: list[dict]):

@@ -1,3 +1,4 @@
+# src/views/components/expenses_record_table.py
 import flet as ft
 
 from views.components.common.glass_table import GlassDataTable 
@@ -33,8 +34,8 @@ class GastosGlassTable(GlassDataTable):
         columns_config = columns_config or [
             {"label": "Fecha", "key": "date", "numeric": False, "expand": 2},
             {"label": "Categoría", "key": "category", "numeric": False, "expand": 3},
-            {"label": "Monto", "key": "amount", "numeric": True, "expand": 3},
-            {"label": "Origen", "key": "origin", "numeric": False, "expand": 2},
+            {"label": "Monto", "key": "amount", "numeric": True, "expand": 2},
+            {"label": "Origen", "key": "origin", "numeric": False, "expand": 3},
         ]
 
         self.on_delete = on_delete
@@ -46,6 +47,7 @@ class GastosGlassTable(GlassDataTable):
         btn_filter_trigger = ft.IconButton(
             icon=ft.Icons.FILTER_LIST,
             icon_color=HEADER_TEXT_COLOR,
+            icon_size=25,
             tooltip="Abrir Filtros",
             on_click=self._open_filter_modal,
         )

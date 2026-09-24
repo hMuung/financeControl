@@ -1,7 +1,5 @@
 # src/main.py
 import flet as ft
-import os
-from pathlib import Path
 
 from config import APP_ICON_PATH, BASE_DIR, DB_NAME
 
@@ -48,7 +46,7 @@ def main(page: ft.Page):
             ExpenseController.mark_clean()
             record_view.load_history()
 
-    # Clic en la barra -> Cambia el PageView
+    # Clic en la barra -> Cambia el PageView    
     def on_bottom_bar_click(index):
         page_view.selected_index = index
         check_and_reload(index)
