@@ -42,6 +42,7 @@ class ExpenseController:
             description=desc_clean,
         )
         self.service.save(new_expense)
+        ExpenseController._is_dirty = True
         return True, "Registro correcto."
 
     def fetch_history(self) -> list[Expense]:

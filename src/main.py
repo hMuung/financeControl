@@ -13,8 +13,6 @@ from views.home_view import HomeView
 from views.record_view import RecordView
 
 from controllers.expense_controller import ExpenseController
-from controllers.category_controller import CategoryController
-from controllers.origin_controller import OriginController
 
 def main(page: ft.Page):
 

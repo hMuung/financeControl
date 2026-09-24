@@ -16,27 +16,26 @@ class StyledModal(ft.Container):
         padding: ft.Padding = ft.Padding.symmetric(vertical=5, horizontal=8)
     ):  
 
-        if not content:
-            content = ft.Container(
-                padding=ft.Padding.symmetric(vertical=20),
-                content=ft.Column(
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=10,
-                    controls=[
-                        ft.Icon(
-                            ft.Icons.CONSTRUCTION_ROUNDED,
-                            size=36,
-                            color=HEADER_TEXT_COLOR,
-                        ),
-                        ft.Text(
-                            "Próximamente",
-                            size=14,
-                            weight=ft.FontWeight.W_500,
-                            color=HEADER_TEXT_COLOR,
-                        ),
-                    ],
-                ),
-            )
+        self._modal_content = content or ft.Container(
+            padding=ft.Padding.symmetric(vertical=20),
+            content=ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=10,
+                controls=[
+                    ft.Icon(
+                        ft.Icons.CONSTRUCTION_ROUNDED,
+                        size=36,
+                        color=HEADER_TEXT_COLOR,
+                    ),
+                    ft.Text(
+                        "Próximamente",
+                        size=14,
+                        weight=ft.FontWeight.W_500,
+                        color=HEADER_TEXT_COLOR,
+                    ),
+                ],
+            ),
+        )
 
         self.is_open = False
 
@@ -63,7 +62,7 @@ class StyledModal(ft.Container):
             spacing=15,
             controls=[
                 modal_header,
-                content
+                self._modal_content
             ]
         )
 

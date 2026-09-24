@@ -4,7 +4,7 @@ import flet as ft
 from controllers.expense_controller import ExpenseController
 from controllers.category_controller import CategoryController
 from controllers.origin_controller import OriginController
-from views.components.glass_table import GlassDataTable
+from views.components.expenses_record_table import GastosGlassTable
 from views.components.common.header import Header
 from views.utils.theme import HEADER_TEXT_COLOR
 
@@ -30,7 +30,7 @@ class RecordView(ft.Column):
         ]
 
         # Instancia de la tabla con los manejadores de eventos
-        self.glass_table = GlassDataTable(
+        self.glass_table = GastosGlassTable(
             title="Gastos",
             categories_options=category_options,
             origins_options=origin_options,
