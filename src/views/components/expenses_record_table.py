@@ -1,5 +1,7 @@
 # src/views/components/expenses_record_table.py
 import flet as ft
+import calendar
+import math
 
 from views.components.common.glass_table import GlassDataTable 
 from views.components.common.gradient_button import GradientButton
@@ -63,9 +65,10 @@ class GastosGlassTable(GlassDataTable):
         )
 
         # Configuracion de Modales
-        self.filter_modal = StyledModal(title="Filtrar", content=None)
         self._init_detail_modal()
         self._init_edit_modal()
+        self._init_filter_modal()
+        self._update_amount_filter_range()
 
     def _init_detail_modal(self):
         self.detail_modal_content = ft.Column(spacing=12, tight=True)
@@ -167,6 +170,217 @@ class GastosGlassTable(GlassDataTable):
             ),
         )
 
+    def _init_filter_modal(self):
+        # Dropdowns de fecha
+        self.filter_dd_year = StyledDropdown(
+            label="Año",
+            options_list=[("all", "Todos")],
+            value="all",
+            leading_icon=ft.Icons.CALENDAR_TODAY_OUTLINED,
+            on_change=self._update_days_dropdown,
+        )
+
+        months_list = [
+            ("all", "Todos"),
+            ("01", "Enero"), ("02", "Febrero"), ("03", "Marzo"),
+            ("04", "Abril"), ("05", "Mayo"), ("06", "Junio"),
+            ("07", "Julio"), ("08", "Agosto"), ("09", "Septiembre"),
+            ("10", "Octubre"), ("11", "Noviembre"), ("12", "Diciembre"),
+        ]
+
+        self.filter_dd_month = StyledDropdown(
+            label="Mes",
+            options_list=months_list,
+            value="all",
+            leading_icon=ft.Icons.CALENDAR_MONTH_OUTLINED,
+            on_change=self._update_days_dropdown,
+        )
+
+        # Inicialmente con 31 dias por defecto
+        days_list = [("all", "Todos")] + [(f"{i:02d}", str(i)) for i in range(1, 32)]
+        self.filter_dd_day = StyledDropdown(
+            label="Día",
+            options_list=days_list,
+            value="all",
+            leading_icon=ft.Icons.TODAY_OUTLINED,
+        )
+
+        cat_opts = [("all", "Todas")] + list(self.categories_options)
+        orig_opts = [("all", "Todos")] + list(self.origins_options)
+
+        self.filter_dd_category = StyledDropdown(
+            label="Categoría",
+            options_list=cat_opts,
+            value="all",
+            leading_icon=ft.Icons.CATEGORY_OUTLINED,
+        )
+        self.filter_dd_origin = StyledDropdown(
+            label="Origen",
+            options_list=orig_opts,
+            value="all",
+            leading_icon=ft.Icons.ACCOUNT_BALANCE_WALLET_OUTLINED,
+        )
+
+        # Rango de Cantidad
+        self.filter_lbl_min = ft.Text("$0", size=15, weight=ft.FontWeight.BOLD, color=HEADER_TEXT_COLOR)
+        self.filter_lbl_max = ft.Text("$100", size=15, weight=ft.FontWeight.BOLD, color=HEADER_TEXT_COLOR)
+
+        self.filter_range_slider = ft.RangeSlider(
+            min=0,
+            max=100,
+            start_value=0,
+            end_value=100,
+            active_color=HEADER_TEXT_COLOR,
+            inactive_color=ft.Colors.WHITE_24,
+            on_change=self._on_range_slider_change,
+        )
+
+        # Botones de Accion
+        filter_action_buttons = ft.Row(
+            alignment=ft.MainAxisAlignment.END,
+            spacing=10,
+            controls=[
+                GradientButton(
+                    text="Limpiar",
+                    icon=ft.Icons.RESTART_ALT_ROUNDED,
+                    gradient=CANCEL_GRADIENT,
+                    padding=ft.Padding.symmetric(vertical=8, horizontal=14),
+                ),
+                GradientButton(
+                    text="Aplicar",
+                    icon=ft.Icons.FILTER_ALT_OUTLINED,
+                    gradient=ACCEPT_GRADIENT,
+                    padding=ft.Padding.symmetric(vertical=8, horizontal=14),
+                ),
+            ],
+        )
+
+        # Estructura del Modal de Filtro
+        self.filter_modal = StyledModal(
+            title="Filtrar",
+            padding=ft.Padding.symmetric(vertical=5, horizontal=15),
+            content=ft.Column(
+                tight=True,
+                spacing=12,
+                controls=[
+                    ft.Text("Fecha", weight=ft.FontWeight.BOLD, color=HEADER_TEXT_COLOR, size=14),
+                    self.filter_dd_month,
+                    ft.Row(
+                        controls=[
+                            self.filter_dd_day,
+                            self.filter_dd_year,
+                        ]
+                    ),
+                    
+                    ft.Text("Clasificacion", weight=ft.FontWeight.BOLD, color=HEADER_TEXT_COLOR, size=14),
+                    self.filter_dd_category,
+                    self.filter_dd_origin,
+                    
+                    ft.Text("Rango de Cantidad", weight=ft.FontWeight.BOLD, color=HEADER_TEXT_COLOR, size=14),
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                            self.filter_lbl_min, 
+                            self.filter_lbl_max
+                        ]
+                    ),
+                    self.filter_range_slider,
+                    
+                    ft.Divider(height=1, color=ft.Colors.WHITE_24),
+                    filter_action_buttons,
+                ],
+            ),
+        )
+
+    def _get_max_days(self, month_val: str, year_val: str) -> int:
+        if not month_val or month_val == "all":
+            return 31
+
+        try:
+            month = int(month_val)
+        except ValueError:
+            return 31
+
+        if not year_val or year_val == "all":
+            if month == 2:
+                return 29  
+            return calendar.monthrange(2023, month)[1]
+
+        try:
+            year = int(year_val)
+            return calendar.monthrange(year, month)[1]
+        except ValueError:
+            if month == 2:
+                return 29
+            return calendar.monthrange(2023, month)[1]
+
+    def _update_days_dropdown(self, e=None):
+        year_val = getattr(self.filter_dd_year, "value", "all")
+        month_val = getattr(self.filter_dd_month, "value", "all")
+
+        max_days = self._get_max_days(month_val, year_val)
+
+        days_list = [("all", "Todos")] + [(f"{i:02d}", str(i)) for i in range(1, max_days + 1)]
+
+        if hasattr(self.filter_dd_day, "options_list"):
+            self.filter_dd_day.options_list = days_list
+
+        if hasattr(self.filter_dd_day, "options"):
+            self.filter_dd_day.options = [
+                ft.dropdown.Option(key=key, text=text) for key, text in days_list
+            ]
+
+        elif hasattr(self.filter_dd_day, "dropdown"):
+            self.filter_dd_day.dropdown.options = [
+                ft.dropdown.Option(key=key, text=text) for key, text in days_list
+            ]
+
+        current_day = getattr(self.filter_dd_day, "value", "all")
+        if current_day and current_day != "all":
+            try:
+                if int(current_day) > max_days:
+                    self.filter_dd_day.value = f"{max_days:02d}"
+            except ValueError:
+                self.filter_dd_day.value = "all"
+
+        if hasattr(self.filter_dd_day, "page") and self.filter_dd_day.page:
+            self.filter_dd_day.update()
+
+    def _get_max_expense_amount(self) -> float:
+        """Obtiene el valor máximo de gasto dentro de self.data."""
+        if not self.data:
+            return 100.0  # Valor por defecto cuando la DB está vacía
+        
+        amounts = [self._parse_amount(item.get("amount", 0)) for item in self.data]
+        max_val = max(amounts) if amounts else 0.0
+        return float(math.ceil(max_val)) if max_val > 0 else 100.0
+
+    def _update_amount_filter_range(self):
+        """Reconfigura los limites del RangeSlider y sus etiquetas"""
+        max_val = self._get_max_expense_amount()
+
+        self.filter_range_slider.min = 0
+        self.filter_range_slider.max = max_val
+        self.filter_range_slider.start_value = 0
+        self.filter_range_slider.end_value = max_val
+
+        # Actualiza las etiquetas de texto encima del slider
+        if hasattr(self, "filter_lbl_min") and hasattr(self, "filter_lbl_max"):
+            self.filter_lbl_min.value = "$0"
+            self.filter_lbl_max.value = f"${int(max_val):,}"
+
+    def _on_range_slider_change(self, e):
+        """Actualiza los textos superiores dinámicamente al mover el slider"""
+        min_val = int(round(e.control.start_value))
+        max_val = int(round(e.control.end_value))
+        
+        self.filter_lbl_min.value = f"${min_val:,}"
+        self.filter_lbl_max.value = f"${max_val:,}"
+        
+        # Refresca las etiquetas en la interfaz
+        self.filter_lbl_min.update()
+        self.filter_lbl_max.update()
+
     def did_mount(self):
         if self.page and self.detail_modal not in self.page.overlay:
             self.page.overlay.append(self.detail_modal)
@@ -261,6 +475,7 @@ class GastosGlassTable(GlassDataTable):
                     self.list_view.controls = [self._build_empty_control()]
 
                 self._update_title_count()
+                self._update_amount_filter_range()
                 self.update()
             else:
                 Toast.error(page, message)
@@ -304,6 +519,7 @@ class GastosGlassTable(GlassDataTable):
                         break
 
                 self.list_view.update()
+                self._update_amount_filter_range()
                 self._open_detail_modal(e, self.selected_item)
             else:
                 Toast.error(page, message)
@@ -314,3 +530,10 @@ class GastosGlassTable(GlassDataTable):
     def _handle_cancel(self, e):
         self.edit_modal.close(e)
         self._open_detail_modal(e, self.selected_item)
+
+    def update_data(self, new_data: list[dict]):
+        # Extension
+        super().update_data(new_data)
+        self._update_amount_filter_range()
+        if self.page:
+            self.update()

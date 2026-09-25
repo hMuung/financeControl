@@ -1,5 +1,6 @@
 # src/views/components/common/styled_dropdown.py
 import flet as ft
+from config import MAX_MENU_HEIGHT
 
 
 class StyledDropdown(ft.Dropdown):
@@ -8,15 +9,20 @@ class StyledDropdown(ft.Dropdown):
         label: str | None = None,
         hint_text: str | None = None,
         leading_icon: str | None = None,
-        options_list: list[tuple[int | str, str, str, str] | tuple[int | str, str] ] | None = None,
+        options_list: list[tuple[int | str, str, str, str] | tuple[int | str, str]] | None = None,
         border_radius: int = 16,
         focused_color: str = ft.Colors.BLUE,
+        max_menu_height: int = MAX_MENU_HEIGHT,
         expand: bool = True,
         dense: bool = True,
         content_padding: ft.Padding | None = ft.Padding.all(0),
         on_change=None,
         **kwargs,
     ):
+        # Guarda los colores por defecto definidos externamente o por el tema
+        self._default_fill_color = kwargs.get("fill_color")
+        self._default_color = kwargs.get("color")
+
         custom_border = {
             ft.ControlState.DEFAULT: ft.OutlineInputBorder(
                 border_radius=border_radius,
@@ -81,14 +87,11 @@ class StyledDropdown(ft.Dropdown):
                     )
                 )
 
-        # Asigna el color de fondo/texto previo a construir
         initial_value = kwargs.get("value")
         if initial_value and initial_value in self._option_colors:
             colors = self._option_colors[initial_value]
-            if colors["bgcolor"]:
-                kwargs["fill_color"] = colors["bgcolor"]
-            if colors["color"]:
-                kwargs["color"] = colors["color"]
+            kwargs["fill_color"] = colors["bgcolor"] or self._default_fill_color
+            kwargs["color"] = colors["color"] or self._default_color
 
         super().__init__(
             label=label,
@@ -100,6 +103,7 @@ class StyledDropdown(ft.Dropdown):
             border=custom_border,
             menu_style=custom_menu_style,
             options=formatted_options,
+            menu_height=max_menu_height,
             on_select=self._internal_on_select,
             content_padding=content_padding,
             **kwargs,
@@ -115,19 +119,14 @@ class StyledDropdown(ft.Dropdown):
 
     def clean_data(self):
         self.value = None
-        self.fill_color = None
-        self.color = None
+        self.fill_color = self._default_fill_color
+        self.color = self._default_color
 
     def _internal_on_select(self, e):
-        # Actualiza dinamicamente fill_color
-        if self.value in self._option_colors:
-            colors = self._option_colors[self.value]
-            if colors["bgcolor"]:
-                self.fill_color = colors["bgcolor"]
-            if colors["color"]:
-                self.color = colors["color"]
-            self.update()
+        colors = self._option_colors.get(self.value, {})
+        self.fill_color = colors.get("bgcolor") or self._default_fill_color
+        self.color = colors.get("color") or self._default_color
+        self.update()
 
-        # Ejecuta la callback original si se declaro
         if self._user_on_select:
             self._user_on_select(e)

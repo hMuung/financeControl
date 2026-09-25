@@ -15,6 +15,7 @@ ICONS_DIR = ASSETS_DIR / "icon"
 APP_LOGO_PATH = ICONS_DIR / "icon.png"
 APP_ICON_PATH = ICONS_DIR / "appIcon.png"
 
+MAX_MENU_HEIGHT = 350
 
 DB_NAME = "finance_control.db"
 
