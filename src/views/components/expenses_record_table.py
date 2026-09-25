@@ -245,12 +245,14 @@ class GastosGlassTable(GlassDataTable):
                     icon=ft.Icons.RESTART_ALT_ROUNDED,
                     gradient=CANCEL_GRADIENT,
                     padding=ft.Padding.symmetric(vertical=8, horizontal=14),
+                    on_click=self._clear_filters
                 ),
                 GradientButton(
                     text="Aplicar",
                     icon=ft.Icons.FILTER_ALT_OUTLINED,
                     gradient=ACCEPT_GRADIENT,
                     padding=ft.Padding.symmetric(vertical=8, horizontal=14),
+                    on_click=self._apply_filters
                 ),
             ],
         )
@@ -291,6 +293,146 @@ class GastosGlassTable(GlassDataTable):
                 ],
             ),
         )
+
+    def _parse_item_date(self, date_str: str):
+        """Extrae (año, mes, día) como strings formateados de 2 dígitos o None."""
+        if not date_str:
+            return None, None, None
+        
+        try:
+            # Soporta formato ISO 'YYYY-MM-DD' o 'YYYY-MM-DD HH:MM:SS'
+            if "-" in date_str:
+                parts = date_str.split("T")[0].split(" ")[0].split("-")
+                if len(parts) == 3:
+                    return parts[0], parts[1].zfill(2), parts[2].zfill(2)
+            # Soporta formato latino 'DD/MM/YYYY'
+            elif "/" in date_str:
+                parts = date_str.split(" ")[0].split("/")
+                if len(parts) == 3:
+                    return parts[2], parts[1].zfill(2), parts[0].zfill(2)
+        except Exception:
+            pass
+        return None, None, None
+
+    def _update_years_dropdown(self):
+        """Puebla el dropdown de años con los años presentes en los datos"""
+        years = set()
+        for item in self.data:
+            y, _, _ = self._parse_item_date(str(item.get("date", "")))
+            if y:
+                years.add(y)
+
+        sorted_years = sorted(list(years), reverse=True)
+        years_list = [("all", "Todos")] + [(y, y) for y in sorted_years]
+
+        if hasattr(self.filter_dd_year, "options_list"):
+            self.filter_dd_year.options_list = years_list
+
+        if hasattr(self.filter_dd_year, "options"):
+            self.filter_dd_year.options = [
+                ft.dropdown.Option(key=k, text=v) for k, v in years_list
+            ]
+        elif hasattr(self.filter_dd_year, "dropdown"):
+            self.filter_dd_year.dropdown.options = [
+                ft.dropdown.Option(key=k, text=v) for k, v in years_list
+            ]
+
+    def _apply_filters(self, e=None):
+        """Filtra self.data segun los criterios seleccionados en el modal."""
+        sel_year = getattr(self.filter_dd_year, "value", "all")
+        sel_month = getattr(self.filter_dd_month, "value", "all")
+        sel_day = getattr(self.filter_dd_day, "value", "all")
+        
+        sel_cat_id = getattr(self.filter_dd_category, "value", "all")
+        sel_orig_id = getattr(self.filter_dd_origin, "value", "all")
+
+        min_amt = self.filter_range_slider.start_value
+        max_amt = self.filter_range_slider.end_value
+
+        # Mapeos para traducir IDs de categoría/origen a sus nombres si es necesario
+        cat_map = {str(c[0]): c[1] for c in self.categories_options if len(c) > 1}
+        orig_map = {str(o[0]): o[1] for o in self.origins_options if len(o) > 1}
+
+        filtered_data = []
+
+        for item in self.data:
+            # Filtro de Fecha
+            y, m, d = self._parse_item_date(str(item.get("date", "")))
+            if sel_year != "all" and y != sel_year:
+                continue
+            if sel_month != "all" and m != sel_month:
+                continue
+            if sel_day != "all" and d != sel_day:
+                continue
+
+            # Filtro de Categoria
+            if sel_cat_id != "all":
+                target_cat_name = cat_map.get(str(sel_cat_id))
+                item_cat = str(item.get("category", ""))
+                item_cat_id = str(item.get("category_id", ""))
+                if item_cat != target_cat_name and item_cat_id != str(sel_cat_id):
+                    continue
+
+            # Filtro de Origen
+            if sel_orig_id != "all":
+                target_orig_name = orig_map.get(str(sel_orig_id))
+                item_orig = str(item.get("origin", ""))
+                item_orig_id = str(item.get("origin_id", ""))
+                if item_orig != target_orig_name and item_orig_id != str(sel_orig_id):
+                    continue
+
+            # Filtro de Monto
+            amt = self._parse_amount(item.get("amount", 0))
+            if not (min_amt <= amt <= max_amt):
+                continue
+
+            filtered_data.append(item)
+
+        # Actualizar la interfaz con las filas filtradas
+        if filtered_data:
+            self.list_view.controls = [self._build_single_row(item) for item in filtered_data]
+        else:
+            self.list_view.controls = [self._build_empty_control()]
+
+        # Cerrar el modal y refrescar la tabla
+        self.filter_modal.close(e)
+        self.list_view.update()
+
+    def _clear_filters(self, e=None):
+        """Restablece los controles de filtro y vuelve a mostrar todos los registros"""
+        # Restablecer valores de Dropdowns
+        self.filter_dd_year.value = "all"
+        self.filter_dd_month.value = "all"
+        self.filter_dd_day.value = "all"
+        self._update_days_dropdown()
+
+        # Restablecer Categoria (Valor y Colores)
+        self.filter_dd_category.value = "all"
+        self.filter_dd_category.color = None
+        self.filter_dd_category.fill_color = None
+
+        # Restablecer Origen (Valor y Colores)
+        self.filter_dd_origin.value = "all"
+        self.filter_dd_origin.color = None
+        self.filter_dd_origin.fill_color = None
+
+        # Restablecer Slider de Rango
+        max_val = self._get_max_expense_amount()
+        self.filter_range_slider.start_value = 0
+        self.filter_range_slider.end_value = max_val
+        self.filter_lbl_min.value = "$0"
+        self.filter_lbl_max.value = f"${int(max_val):,}"
+
+        # Refrescar la vista los datos originales
+        if self.data:
+            self.list_view.controls = [self._build_single_row(item) for item in self.data]
+        else:
+            self.list_view.controls = [self._build_empty_control()]
+
+        # Cerrar modal y refrescar
+        self.filter_modal.close(e)
+        self.filter_modal.update()
+        self.list_view.update()
 
     def _get_max_days(self, month_val: str, year_val: str) -> int:
         if not month_val or month_val == "all":
@@ -390,6 +532,7 @@ class GastosGlassTable(GlassDataTable):
             self.page.overlay.remove(self.detail_modal)
 
     def _open_filter_modal(self, e=None):
+        self._update_years_dropdown()
         self.filter_modal.open(e)
 
     def _open_detail_modal(self, e, item: dict):
@@ -534,6 +677,7 @@ class GastosGlassTable(GlassDataTable):
     def update_data(self, new_data: list[dict]):
         # Extension
         super().update_data(new_data)
+        self._update_years_dropdown()
         self._update_amount_filter_range()
         if self.page:
             self.update()

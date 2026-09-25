@@ -17,21 +17,25 @@ BUTTON_GRADIENT = ft.LinearGradient(
 CANCEL_GRADIENT = ft.LinearGradient(
     begin=ft.Alignment(-1, 0),
     end=ft.Alignment(1, 0),
-    colors=["#B91515", "#FB3838"],
+    colors=["#E56B6F", "#F28482"],
 )
 
 ACCEPT_GRADIENT = ft.LinearGradient(
     begin=ft.Alignment(-1, 0),
     end=ft.Alignment(1, 0),
-    colors=["#37A93E", "#58DB88"],
+    colors=["#38A3A5", "#57CC99"],
 )
 
 MODIFI_GRADIENT = ft.LinearGradient(
-    colors=[ft.Colors.BLUE_700, ft.Colors.BLUE_500]
+    begin=ft.Alignment(-1, 0),
+    end=ft.Alignment(1, 0),
+    colors=["#5C7AEA", "#7D92E8"],
 )
 
 DELETE_GRADIENT = ft.LinearGradient(
-    colors=[ft.Colors.RED_700, ft.Colors.RED_500]
+    begin=ft.Alignment(-1, 0),
+    end=ft.Alignment(1, 0),
+    colors=["#D05353", "#E87A7A"],
 )
 
 MODAL_SHADOW = ft.BoxShadow(
