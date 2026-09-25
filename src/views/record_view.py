@@ -17,8 +17,8 @@ class RecordView(ft.Column):
         self.origin_controller = OriginController()
 
         # Obtener datos de la DB
-        categories = self.category_controller.get_all_categories()
-        origins = self.origin_controller.get_all_origins()
+        categories = self.category_controller.get_expense_categories()
+        origins = self.origin_controller.get_expense_origins()
 
         # Obtener datos desde la base de datos
         category_options = [

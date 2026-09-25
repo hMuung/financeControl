@@ -1,5 +1,6 @@
 # src/main.py
 import flet as ft
+import sqlite3
 
 from config import APP_ICON_PATH, BASE_DIR, DB_NAME
 
@@ -12,7 +13,27 @@ from views.record_view import RecordView
 
 from controllers.expense_controller import ExpenseController
 
+
+def reset_database():
+
+    """Limpia las tablas para forzar a los servicios a recrearlas y re-sembrar."""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            # Elimina las tablas existentes
+            cursor.execute("DROP TABLE IF EXISTS categories")
+            cursor.execute("DROP TABLE IF EXISTS origins")
+            cursor.execute("DROP TABLE IF EXISTS expenses")
+            cursor.execute("DROP TABLE IF EXISTS incomes")
+            conn.commit()
+            print("Tablas reiniciadas con éxito.")
+    except sqlite3.OperationalError as e:
+        print(f"No se pudieron reiniciar las tablas: {e}")
+
+
 def main(page: ft.Page):
+
+    #reset_database()
 
     page.theme_mode = ft.ThemeMode.LIGHT
     page.platform = ft.PagePlatform.ANDROID

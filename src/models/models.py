@@ -21,6 +21,8 @@ class Category:
     color: Optional[str] = None
     bg_color: Optional[str] = None
     icon: Optional[str] = None
+    type: str = "EXPENSE"  # "EXPENSE" o "INCOME"
+
 
 @dataclass
 class Origin:
@@ -29,3 +31,4 @@ class Origin:
     color: Optional[str] = None
     bg_color: Optional[str] = None
     icon: Optional[str] = None
+    type: str = "EXPENSE"  #"EXPENSE" o "INCOME"

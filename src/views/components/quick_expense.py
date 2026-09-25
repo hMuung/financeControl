@@ -20,8 +20,8 @@ class QuickExpenseCard(GlassCard):
         self.origin_controller = OriginController()
 
         # Cargar datos dinamicos desde la base de datos
-        categories = self.category_controller.get_all_categories()
-        origins = self.origin_controller.get_all_origins()
+        categories = self.category_controller.get_expense_categories()
+        origins = self.origin_controller.get_expense_origins()
 
         # Mapear los modelos a tuplas
         category_options = [

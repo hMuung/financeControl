@@ -8,3 +8,9 @@ class CategoryController:
 
     def get_all_categories(self) -> list[Category]:
         return self.service.get_all()
+
+    def get_expense_categories(self) -> list[Category]:
+        return self.service.get_all(category_type="EXPENSE")
+
+    def get_income_categories(self) -> list[Category]:
+        return self.service.get_all(category_type="INCOME")

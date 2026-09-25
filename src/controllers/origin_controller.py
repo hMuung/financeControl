@@ -8,3 +8,9 @@ class OriginController:
 
     def get_all_origins(self) -> list[Origin]:
         return self.service.get_all()
+
+    def get_expense_origins(self) -> list[Origin]:
+        return self.service.get_all(origin_type="EXPENSE")
+
+    def get_income_origins(self) -> list[Origin]:
+        return self.service.get_all(origin_type="INCOME")

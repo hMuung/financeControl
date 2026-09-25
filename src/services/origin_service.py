@@ -2,6 +2,7 @@
 import sqlite3
 from models.models import Origin
 from config import DB_NAME
+from services.seeds import seed_origin
 
 class OriginService:
     def __init__(self, db_name=DB_NAME):
@@ -18,7 +19,8 @@ class OriginService:
                     name TEXT NOT NULL UNIQUE,
                     color TEXT,
                     bg_color TEXT,
-                    icon TEXT
+                    icon TEXT,
+                    type TEXT NOT NULL DEFAULT 'EXPENSE'
                 )
             """)
             conn.commit()
@@ -28,19 +30,34 @@ class OriginService:
             cursor = conn.cursor()
             cursor.execute("SELECT COUNT(*) FROM origins")
             if cursor.fetchone()[0] == 0:
-                sample_origins = [
-                    ("Efectivo", "#2E7D32", "#E8F5E9", "payments"),
-                    ("Tarjeta de Débito", "#0277BD", "#E1F5FE", "credit_card"),
-                    ("Tarjeta de Crédito", "#C2185B", "#FCE4EC", "credit_card"),
-                ]
+                sample_origins = seed_origin
+                # seed_origin debe incluir 5 valores: (name, color, bg_color, icon, type)
                 cursor.executemany(
-                    "INSERT INTO origins (name, color, bg_color, icon) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO origins (name, color, bg_color, icon, type) VALUES (?, ?, ?, ?, ?)",
                     sample_origins
                 )
                 conn.commit()
 
-    def get_all(self) -> list[Origin]:
+    def get_all(self, origin_type: str | None = None) -> list[Origin]:
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, name, color, bg_color, icon FROM origins")
-            return [Origin(id=r[0], name=r[1], color=r[2], bg_color=r[3], icon=r[4]) for r in cursor.fetchall()]
+            
+            if origin_type:
+                cursor.execute(
+                    "SELECT id, name, color, bg_color, icon, type FROM origins WHERE type = ?",
+                    (origin_type,)
+                )
+            else:
+                cursor.execute("SELECT id, name, color, bg_color, icon, type FROM origins")
+
+            return [
+                Origin(
+                    id=r[0], 
+                    name=r[1], 
+                    color=r[2], 
+                    bg_color=r[3], 
+                    icon=r[4], 
+                    type=r[5]
+                ) 
+                for r in cursor.fetchall()
+            ]
