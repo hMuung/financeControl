@@ -34,7 +34,7 @@ def reset_database():
 
 def main(page: ft.Page):
 
-    reset_database()
+    #reset_database()
 
     page.theme_mode = ft.ThemeMode.LIGHT
     page.platform = ft.PagePlatform.ANDROID
