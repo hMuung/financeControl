@@ -12,6 +12,7 @@ from views.home_view import HomeView
 from views.record_view import RecordView
 
 from controllers.expense_controller import ExpenseController
+from controllers.income_controller import IncomeController
 
 
 def reset_database():
@@ -33,7 +34,7 @@ def reset_database():
 
 def main(page: ft.Page):
 
-    #reset_database()
+    reset_database()
 
     page.theme_mode = ft.ThemeMode.LIGHT
     page.platform = ft.PagePlatform.ANDROID
@@ -65,7 +66,11 @@ def main(page: ft.Page):
     def check_and_reload(index: int):
         if index == 1 and ExpenseController.is_dirty():
             ExpenseController.mark_clean()
-            record_view.load_history()
+            record_view.load_expense_history()
+
+        if index == 1 and IncomeController.is_dirty():
+            IncomeController.mark_clean()
+            record_view.load_income_history()
 
     # Clic en la barra -> Cambia el PageView    
     def on_bottom_bar_click(index):

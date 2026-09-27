@@ -12,6 +12,18 @@ class Expense:
     date: Optional[str] = None
     category_name: Optional[str] = None
     origin_name: Optional[str] = None
+    
+
+@dataclass
+class Income:
+    category_id: int
+    origin_id: int
+    amount: float
+    id: Optional[int] = None
+    description: Optional[str] = "Sin descripcion"
+    date: Optional[str] = None
+    category_name: Optional[str] = None
+    origin_name: Optional[str] = None
 
 
 @dataclass

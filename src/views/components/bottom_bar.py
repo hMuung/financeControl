@@ -91,7 +91,6 @@ class ModernGlassBottomBar(ft.Container):
         self.row.controls = row_controls
 
     def set_selected_index(self, index: int, notify: bool = False):
-        """Actualiza la interfaz visual de la barra"""
         if index < 0 or index >= len(self.item_controls):
             return
         if self.selected_index == index and not notify:

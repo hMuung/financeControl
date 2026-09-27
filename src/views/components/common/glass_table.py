@@ -15,6 +15,9 @@ class GlassDataTable(ft.Stack):
         empty_message: str = "No hay datos registrados.",
         on_row_click=None,
         action_button: ft.Control = None,
+        minimized_height: float = 50,   # Altura solo barra
+        collapsed_height: float = 380,  # Altura estandar abierta
+        expanded_height: float = 650,   # Altura maxima abierta
     ):
         self.title_text = title
         self.columns_config = columns_config or []
@@ -22,7 +25,16 @@ class GlassDataTable(ft.Stack):
         self.empty_message = empty_message
         self.on_row_click = on_row_click
         self.selected_item = None
-        self.is_expanded = False 
+        self.action_button = action_button
+
+        # Alturas configurables
+        self.minimized_height = minimized_height
+        self.collapsed_height = collapsed_height
+        self.expanded_height = expanded_height
+
+        # Estado inicial
+        self.is_minimized = True
+        self.is_expanded = False
 
         self.header_row = self._build_header_row()
 
@@ -42,79 +54,118 @@ class GlassDataTable(ft.Stack):
             color=HEADER_TEXT_COLOR,
         )
 
-        # Botón de expandir / minimizar
-        self.expand_button = ft.IconButton(
-            icon=ft.Icons.FULLSCREEN,
+        # Boton para alternar solo barra (Minimizar / Desplegar)
+        self.btn_minimize = ft.IconButton(
+            icon=ft.Icons.KEYBOARD_ARROW_DOWN,
             icon_color=HEADER_TEXT_COLOR,
             icon_size=25,
-            tooltip="Expandir",
-            on_click=self._toggle_expand,
+            tooltip="Desplegar",
+            on_click=self._toggle_minimize,
         )
 
-        # Agrupamos los botones de acción en la cabecera
+        # Boton para alternar tamaño de apertura (Normal / Pantalla Maxima)
+        self.btn_size_toggle = ft.IconButton(
+            icon=ft.Icons.FULLSCREEN,
+            icon_color=HEADER_TEXT_COLOR,
+            icon_size=23,
+            tooltip="Expandir",
+            on_click=self._toggle_size,
+        )
+
+        # Agrupacion de controles en la cabecera
         action_controls = []
-        if action_button:
-            action_controls.append(action_button)
-        action_controls.append(self.expand_button)
+        if self.action_button:
+            action_controls.append(self.action_button)
+        
+        action_controls.append(self.btn_size_toggle)
+        action_controls.append(self.btn_minimize)
 
         header_actions_row = ft.Row(
             controls=action_controls,
-            spacing=4,
+            spacing=1,
             alignment=ft.MainAxisAlignment.END,
         )
 
-        header_controls = [self.title_text_control, header_actions_row]
+        header_controls = [
+            ft.Container(width=5),
+            self.title_text_control, 
+            ft.Container(expand=True),
+            header_actions_row
+        ]
+
+        self.table_container = ft.Container(
+            content=self.list_view,
+            border_radius=10,
+            clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
+            expand=True,
+        )
 
         self.glass_card = GlassCard(
+            padding=0,
             content=ft.Column(
                 spacing=6,
                 expand=True,
                 controls=[
                     ft.Row(
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        alignment=ft.MainAxisAlignment.START,
                         controls=header_controls,
                     ),
                     self.header_row,
-                    ft.Container(
-                        content=self.list_view,
-                        border_radius=10,
-                        clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
-                        expand=True,
-                    ),
+                    self.table_container,
                 ],
             )
         )
 
-        # Guardamos referencias a los dos contenedores principales
-        self.card_container = ft.Container(content=self.glass_card, expand=1)
-        self.spacer_container = ft.Container(expand=1)
-
-        main_layout = ft.Column(
-            expand=True,
-            controls=[
-                self.card_container,
-                self.spacer_container,
-            ],
+        super().__init__(
+            height=self.minimized_height,
+            controls=[self.glass_card]
         )
 
-        super().__init__(expand=True, controls=[main_layout])
+        self._apply_state()
 
-    def _toggle_expand(self, e):
-        self.is_expanded = not self.is_expanded
-
-        # Si está expandido, ocultamos el espaciador inferior para tomar el 100% de la pantalla
-        self.spacer_container.visible = not self.is_expanded
-
-        # Alternar icono y tooltip
-        if self.is_expanded:
-            self.expand_button.icon = ft.Icons.FULLSCREEN_EXIT
-            self.expand_button.tooltip = "Minimizar"
+    def _apply_state(self):
+        if self.is_minimized:
+            # Estado barra cerrada
+            self.height = self.minimized_height
+            self.header_row.visible = False
+            self.table_container.visible = False
+            
+            # Iconos de cabecera
+            self.btn_minimize.icon = ft.Icons.KEYBOARD_ARROW_DOWN
+            self.btn_minimize.tooltip = "Desplegar"
+            self.btn_size_toggle.visible = False
+            if self.action_button:
+                self.action_button.visible = False
         else:
-            self.expand_button.icon = ft.Icons.FULLSCREEN
-            self.expand_button.tooltip = "Expandir"
+            # Estado tabla abierta
+            self.header_row.visible = True
+            self.table_container.visible = True
+            self.btn_minimize.icon = ft.Icons.KEYBOARD_ARROW_UP
+            self.btn_minimize.tooltip = "Colapsar a barra"
+            self.btn_size_toggle.visible = True
+            if self.action_button:
+                self.action_button.visible = True
 
+            # Altura maxima o normal
+            if self.is_expanded:
+                self.height = self.expanded_height
+                self.btn_size_toggle.icon = ft.Icons.FULLSCREEN_EXIT
+                self.btn_size_toggle.tooltip = "Reducir tamaño"
+            else:
+                self.height = self.collapsed_height
+                self.btn_size_toggle.icon = ft.Icons.FULLSCREEN
+                self.btn_size_toggle.tooltip = "Expandir al máximo"
+
+    def _toggle_minimize(self, e):
+        self.is_minimized = not self.is_minimized
+        self._apply_state()
         self.update()
 
+    def _toggle_size(self, e):
+        self.is_expanded = not self.is_expanded
+        self._apply_state()
+        self.update()
+        
     def _get_page(self, e=None):
         if e and hasattr(e, "page") and e.page:
             return e.page
