@@ -1,7 +1,7 @@
-# src/views/components/quick_expense.py
+# src/views/components/quick_income.py
 import flet as ft
 
-from controllers.expense_controller import ExpenseController
+from controllers.income_controller import IncomeController
 from controllers.category_controller import CategoryController
 from controllers.origin_controller import OriginController
 from views.components.common.glass_card import GlassCard
@@ -12,29 +12,28 @@ from views.utils.theme import BUTTON_GRADIENT
 from views.utils.toast import Toast
 
 
-class QuickExpenseCard(GlassCard):
+class QuickIncomeCard(GlassCard):
     def __init__(self):
         # Instancias de los controladores
-        self.controller = ExpenseController()
+        self.controller = IncomeController()
         self.category_controller = CategoryController()
         self.origin_controller = OriginController()
 
-        # Cargar datos dinamicos desde la base de datos
-        categories = self.category_controller.get_expense_categories()
-        origins = self.origin_controller.get_expense_origins()
+        # Cargar datos dinámicos desde la base de datos
+        categories = self.category_controller.get_income_categories()
+        origins = self.origin_controller.get_income_origins()
 
         # Mapear los modelos a tuplas
         category_options = [
             (cat.id, cat.name, cat.color, cat.bg_color) for cat in categories
         ]
-        
         origin_options = [
             (orig.id, orig.name, orig.color, orig.bg_color) for orig in origins
         ]
 
-        # Campo Categoria con datos dinamicos
+        # Campo Categoría
         self.dd_category = StyledDropdown(
-            label="Categoria",
+            label="Tipo",
             leading_icon=ft.Icons.CATEGORY_OUTLINED,
             options_list=category_options,
         )
@@ -48,22 +47,22 @@ class QuickExpenseCard(GlassCard):
             prefix_icon=ft.Icons.ATTACH_MONEY,
         )
 
-        # Campo Origen con datos dinamicos
+        # Campo Origen/Destino
         self.dd_origin = StyledDropdown(
-            label="Origen",
+            label="Destino",
             hint_text="Selecciona el medio de pago",
             leading_icon=ft.Icons.ACCOUNT_BALANCE_WALLET_OUTLINED,
             options_list=origin_options,
         )
 
-        # Campo Descripcion (Opcional)
+        # Campo Descripción
         self.txt_description = StyledTextField(
             label="Descripcion",
             hint_text="Nota adicional...",
             prefix_icon=ft.Icons.DESCRIPTION_OUTLINED,
         )
 
-        # Boton Añadir
+        # Botón Añadir
         self.btn_add = GradientButton(
             text="Añadir",
             gradient=BUTTON_GRADIENT,
@@ -71,14 +70,13 @@ class QuickExpenseCard(GlassCard):
             on_click=self._on_add_click,
         )
 
-        # Estructura visual del componente
         super().__init__(
             content=ft.Column(
                 horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                 controls=[
                     ft.Row(
                         controls=[
-                            ft.Text("GASTO", weight=ft.FontWeight.BOLD, size=16),
+                            ft.Text("INGRESO", weight=ft.FontWeight.BOLD, size=16),
                         ],
                         alignment=ft.MainAxisAlignment.START,
                     ),
@@ -96,24 +94,21 @@ class QuickExpenseCard(GlassCard):
         )
 
     def _on_add_click(self, e):
-        # Obtener valores de la interfaz
         category = self.dd_category.key
         amount = self.txt_amount.value
         origin = self.dd_origin.key
         description = self.txt_description.value
 
-        # Proceso de la validacion y guardado
-        success, message = self.controller.create_expense(
+        # Llamada corregida al método de ingreso
+        success, message = self.controller.create_income(
             category_id=category,
             amount_str=amount,
             origin_id=origin,
             description=description,
         )
 
-        # Mostrar respuesta segun el resultado
         if success:
             Toast.success(self.page, message)
-            # Limpiar entradas de la UI
             self.dd_category.clean_data()
             self.txt_amount.clean_data()
             self.dd_origin.clean_data()

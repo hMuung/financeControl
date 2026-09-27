@@ -8,7 +8,7 @@ class GlassCard(ft.Container):
     def __init__(
         self,
         content: ft.Control = None,
-        padding: int = 16,
+        padding: ft.Padding = ft.Padding.symmetric(vertical=8,horizontal=8),
         border_radius: int = GLASS_BORDER_RADIUS,
         width: float = float("inf"),  # Ocupa todo el ancho disponible
         **kwargs

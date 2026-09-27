@@ -17,7 +17,7 @@ class GradientButton(ft.Container):
         disabled: bool = False,
         **kwargs
     ):
-        # Construcción del contenido interno (Icono + Texto)
+        # Construccion del contenido interno (Icono + Texto)
         controls = []
         if icon:
             controls.append(ft.Icon(icon, color=icon_color, size=18))
@@ -48,5 +48,5 @@ class GradientButton(ft.Container):
             width=width,
             height=height,
             disabled=disabled,
-            **kwargs  # Permite pasar expand, margin, tooltip, etc.
+            **kwargs
         )
