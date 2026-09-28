@@ -11,6 +11,9 @@ class IncomeController:
     def __init__(self):
         self.service = IncomeService()
 
+    def get_totals(self) -> dict:
+            return self.service.get_totals()
+
     def create_income(
         self,
         category_id: int,

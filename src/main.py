@@ -34,7 +34,7 @@ def reset_database():
 
 def main(page: ft.Page):
 
-    reset_database()
+    #reset_database()
 
     page.theme_mode = ft.ThemeMode.LIGHT
     page.platform = ft.PagePlatform.ANDROID
@@ -64,13 +64,23 @@ def main(page: ft.Page):
 
     # Auxiliar para recargar la vista del historial
     def check_and_reload(index: int):
-        if index == 1 and ExpenseController.is_dirty():
-            ExpenseController.mark_clean()
-            record_view.load_expense_history()
+        is_exp_dirty = ExpenseController.is_dirty()
+        is_inc_dirty = IncomeController.is_dirty()
 
-        if index == 1 and IncomeController.is_dirty():
+        if is_exp_dirty or is_inc_dirty:
+
+            if index == 0:
+                home_view.refresh_summary()
+
+            if index == 1:
+                if is_exp_dirty:
+                    record_view.load_expense_history()
+                if is_inc_dirty:
+                    record_view.load_income_history()
+
+            ExpenseController.mark_clean()
             IncomeController.mark_clean()
-            record_view.load_income_history()
+
 
     # Clic en la barra -> Cambia el PageView    
     def on_bottom_bar_click(index):

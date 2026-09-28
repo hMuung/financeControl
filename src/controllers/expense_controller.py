@@ -11,6 +11,9 @@ class ExpenseController:
     def __init__(self):
         self.service = ExpenseService()
 
+    def get_totals(self) -> dict:
+        return self.service.get_totals()
+
     def create_expense(
         self,
         category_id: int,
