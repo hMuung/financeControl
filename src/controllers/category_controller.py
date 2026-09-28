@@ -2,6 +2,7 @@
 from services.category_service import CategoryService
 from models.models import Category
 
+
 class CategoryController:
     def __init__(self):
         self.service = CategoryService()

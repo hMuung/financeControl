@@ -20,7 +20,7 @@ class IncomeService:
     def __init__(self, db_name=DB_NAME):
         self.db_name = db_name
         self._init_db()
-        self._seed_if_empty()
+        #self._seed_if_empty()
 
     @staticmethod
     def _get_active_periods(date_str: str) -> list[str]:
