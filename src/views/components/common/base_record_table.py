@@ -1,5 +1,6 @@
 # src/views/components/common/bases_record_table.py
 import calendar
+from datetime import date, datetime, timedelta
 import math
 import flet as ft
 
@@ -175,6 +176,24 @@ class BaseRecordGlassTable(GlassDataTable):
         )
 
     def _init_filter_modal(self):
+        # Seleccionable de Período Rápido
+        period_list = [
+            ("all", "Todos"),
+            ("today", "Hoy"),
+            ("yesterday", "Ayer"),
+            ("week", "Esta semana"),
+            ("last_week", "Semana pasada"),
+            ("month", "Este mes"),
+            ("year", "Este año"),
+        ]
+
+        self.filter_dd_period = StyledDropdown(
+            label="Período",
+            options_list=period_list,
+            value="all",
+            leading_icon=ft.Icons.DATE_RANGE_OUTLINED,
+        )
+
         self.filter_dd_year = StyledDropdown(
             label="Año",
             options_list=[("all", "Todos")],
@@ -264,7 +283,8 @@ class BaseRecordGlassTable(GlassDataTable):
                 tight=True,
                 spacing=12,
                 controls=[
-                    ft.Text("Fecha", weight=ft.FontWeight.BOLD, color=HEADER_TEXT_COLOR, size=14),
+                    ft.Text("Fecha y Período", weight=ft.FontWeight.BOLD, color=HEADER_TEXT_COLOR, size=14),
+                    self.filter_dd_period, 
                     self.filter_dd_month,
                     ft.Row(controls=[self.filter_dd_day, self.filter_dd_year]),
                     ft.Text("Clasificación", weight=ft.FontWeight.BOLD, color=HEADER_TEXT_COLOR, size=14),
@@ -283,7 +303,6 @@ class BaseRecordGlassTable(GlassDataTable):
         )
 
     # Utilidades y Procesamiento de Datos
-
     def _parse_item_date(self, date_str: str):
         if not date_str:
             return None, None, None
@@ -299,6 +318,37 @@ class BaseRecordGlassTable(GlassDataTable):
         except Exception:
             pass
         return None, None, None
+
+    def _is_in_period(self, item_date_str: str, period: str) -> bool:
+        if period == "all" or not period:
+            return True
+
+        y, m, d = self._parse_item_date(item_date_str)
+        if not (y and m and d):
+            return False
+
+        try:
+            item_dt = date(int(y), int(m), int(d))
+        except ValueError:
+            return False
+
+        today = date.today()
+
+        if period == "today":
+            return item_dt == today
+        elif period == "yesterday":
+            return item_dt == (today - timedelta(days=1))
+        elif period == "week":
+            return item_dt.isocalendar()[:2] == today.isocalendar()[:2]
+        elif period == "last_week":
+            last_week_date = today - timedelta(days=7)
+            return item_dt.isocalendar()[:2] == last_week_date.isocalendar()[:2]
+        elif period == "month":
+            return item_dt.year == today.year and item_dt.month == today.month
+        elif period == "year":
+            return item_dt.year == today.year
+
+        return True
 
     def _get_max_amount(self) -> float:
         if not self.data:
@@ -325,7 +375,6 @@ class BaseRecordGlassTable(GlassDataTable):
             return 29 if month == 2 else calendar.monthrange(2023, month)[1]
 
     # Logica de Filtros
-
     def _update_years_dropdown(self):
         years = {
             y
@@ -336,12 +385,7 @@ class BaseRecordGlassTable(GlassDataTable):
         sorted_years = sorted(list(years), reverse=True)
         years_list = [("all", "Todos")] + [(y, y) for y in sorted_years]
 
-        if hasattr(self.filter_dd_year, "options_list"):
-            self.filter_dd_year.options_list = years_list
-        if hasattr(self.filter_dd_year, "options"):
-            self.filter_dd_year.options = [ft.dropdown.Option(key=k, text=v) for k, v in years_list]
-        elif hasattr(self.filter_dd_year, "dropdown"):
-            self.filter_dd_year.dropdown.options = [ft.dropdown.Option(key=k, text=v) for k, v in years_list]
+        self.filter_dd_year.set_options(years_list)
 
     def _update_days_dropdown(self, e=None):
         year_val = getattr(self.filter_dd_year, "value", "all")
@@ -350,12 +394,7 @@ class BaseRecordGlassTable(GlassDataTable):
 
         days_list = [("all", "Todos")] + [(f"{i:02d}", str(i)) for i in range(1, max_days + 1)]
 
-        if hasattr(self.filter_dd_day, "options_list"):
-            self.filter_dd_day.options_list = days_list
-        if hasattr(self.filter_dd_day, "options"):
-            self.filter_dd_day.options = [ft.dropdown.Option(key=k, text=v) for k, v in days_list]
-        elif hasattr(self.filter_dd_day, "dropdown"):
-            self.filter_dd_day.dropdown.options = [ft.dropdown.Option(key=k, text=v) for k, v in days_list]
+        self.filter_dd_day.set_options(days_list)
 
         current_day = getattr(self.filter_dd_day, "value", "all")
         if current_day and current_day != "all":
@@ -388,6 +427,7 @@ class BaseRecordGlassTable(GlassDataTable):
         self.filter_lbl_max.update()
 
     def _apply_filters(self, e=None):
+        sel_period = getattr(self.filter_dd_period, "value", "all")
         sel_year = getattr(self.filter_dd_year, "value", "all")
         sel_month = getattr(self.filter_dd_month, "value", "all")
         sel_day = getattr(self.filter_dd_day, "value", "all")
@@ -401,46 +441,69 @@ class BaseRecordGlassTable(GlassDataTable):
         cat_map = {str(c[0]): c[1] for c in self.categories_options if len(c) > 1}
         orig_map = {str(o[0]): o[1] for o in self.origins_options if len(o) > 1}
 
-        filtered_data = []
+        visible_count = 0
 
-        for item in self.data:
-            y, m, d = self._parse_item_date(str(item.get("date", "")))
-            if sel_year != "all" and y != sel_year:
-                continue
-            if sel_month != "all" and m != sel_month:
-                continue
-            if sel_day != "all" and d != sel_day:
+        for ctrl in self.list_view.controls:
+            # Ignorar el componente del mensaje vacio
+            if ctrl == self.empty_control:
                 continue
 
-            if sel_cat_id != "all":
+            item = getattr(ctrl, "item_data", None)
+            if not item:
+                continue
+
+            item_date_str = str(item.get("date", ""))
+            is_visible = True
+
+            # Evaluacion de Periodo
+            if not self._is_in_period(item_date_str, sel_period):
+                is_visible = False
+
+            # Evaluacion de Fecha especifica
+            if is_visible:
+                y, m, d = self._parse_item_date(item_date_str)
+                if sel_year != "all" and y != sel_year:
+                    is_visible = False
+                elif sel_month != "all" and m != sel_month:
+                    is_visible = False
+                elif sel_day != "all" and d != sel_day:
+                    is_visible = False
+
+            # Evaluación de Categoria
+            if is_visible and sel_cat_id != "all":
                 target_cat_name = cat_map.get(str(sel_cat_id))
                 item_cat = str(item.get("category", ""))
                 item_cat_id = str(item.get("category_id", ""))
                 if item_cat != target_cat_name and item_cat_id != str(sel_cat_id):
-                    continue
+                    is_visible = False
 
-            if sel_orig_id != "all":
+            # Evaluacion de Origen
+            if is_visible and sel_orig_id != "all":
                 target_orig_name = orig_map.get(str(sel_orig_id))
                 item_orig = str(item.get("origin", ""))
                 item_orig_id = str(item.get("origin_id", ""))
                 if item_orig != target_orig_name and item_orig_id != str(sel_orig_id):
-                    continue
+                    is_visible = False
 
-            amt = self._parse_amount(item.get("amount", 0))
-            if not (min_amt <= amt <= max_amt):
-                continue
+            # Evaluacion de Monto
+            if is_visible:
+                amt = self._parse_amount(item.get("amount", 0))
+                if not (min_amt <= amt <= max_amt):
+                    is_visible = False
 
-            filtered_data.append(item)
+            ctrl.visible = is_visible
+            if is_visible:
+                visible_count += 1
 
-        if filtered_data:
-            self.list_view.controls = [self._build_single_row(item) for item in filtered_data]
-        else:
-            self.list_view.controls = [self._build_empty_control()]
+        # Mostrar u ocultar el mensaje de datos vacios
+        self.empty_control.visible = (visible_count == 0)
 
         self.filter_modal.close(e)
         self.list_view.update()
+        self._update_title_count(visible_count)
 
     def _clear_filters(self, e=None):
+        self.filter_dd_period.value = "all"
         self.filter_dd_year.value = "all"
         self.filter_dd_month.value = "all"
         self.filter_dd_day.value = "all"
@@ -460,25 +523,39 @@ class BaseRecordGlassTable(GlassDataTable):
         self.filter_lbl_min.value = "$0"
         self.filter_lbl_max.value = f"${int(max_val):,}"
 
-        if self.data:
-            self.list_view.controls = [self._build_single_row(item) for item in self.data]
-        else:
-            self.list_view.controls = [self._build_empty_control()]
+        visible_count = 0
+        for ctrl in self.list_view.controls:
+            if ctrl == self.empty_control:
+                continue
+            ctrl.visible = True
+            visible_count += 1
+
+        self.empty_control.visible = (visible_count == 0)
 
         self.filter_modal.close(e)
         self.filter_modal.update()
         self.list_view.update()
+        self._update_title_count(visible_count)
 
     # Eventos de Ciclo de Vida y Modales
-
     def did_mount(self):
-        if self.page and self.detail_modal not in self.page.overlay:
-            self.page.overlay.append(self.detail_modal)
+        if self.page:
+            if self.detail_modal not in self.page.overlay:
+                self.page.overlay.append(self.detail_modal)
+            if self.filter_modal not in self.page.overlay:
+                self.page.overlay.append(self.filter_modal)
+            if self.edit_modal not in self.page.overlay:
+                self.page.overlay.append(self.edit_modal)
 
     def will_unmount(self):
-        if self.page and self.detail_modal in self.page.overlay:
-            self.page.overlay.remove(self.detail_modal)
-
+        if self.page:
+            if self.detail_modal in self.page.overlay:
+                self.page.overlay.remove(self.detail_modal)
+            if self.filter_modal in self.page.overlay:
+                self.page.overlay.remove(self.filter_modal)
+            if self.edit_modal in self.page.overlay:
+                self.page.overlay.append(self.edit_modal)
+    
     def _open_filter_modal(self, e=None):
         self._update_years_dropdown()
         self.filter_modal.open(e)
@@ -517,7 +594,6 @@ class BaseRecordGlassTable(GlassDataTable):
         )
 
     # Manejadores CRUD
-
     def _handle_edit(self, e):
         item = self.selected_item
         if not item:
@@ -566,7 +642,6 @@ class BaseRecordGlassTable(GlassDataTable):
                 if not self.list_view.controls:
                     self.list_view.controls = [self._build_empty_control()]
 
-                self._update_title_count()
                 self._update_amount_filter_range()
                 self.update()
             else:
@@ -622,12 +697,12 @@ class BaseRecordGlassTable(GlassDataTable):
             else:
                 Toast.error(page, message)
         else:
-            self.edit_modal.close(e)
             self._open_detail_modal(e, self.selected_item)
+            self.edit_modal.close(e)
 
     def _handle_cancel(self, e):
-        self.edit_modal.close(e)
         self._open_detail_modal(e, self.selected_item)
+        self.edit_modal.close(e)
 
     def update_data(self, new_data: list[dict]):
         super().update_data(new_data)

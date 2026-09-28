@@ -82,7 +82,7 @@ class StyledModal(ft.Container):
             expand=True,
             padding=20,
             bgcolor=ft.Colors.with_opacity(0.35, ft.Colors.BLACK),
-            blur=ft.Blur(sigma_x=25, sigma_y=25),
+            blur=ft.Blur(sigma_x=5, sigma_y=5),
             alignment=ft.Alignment.CENTER,
             on_click=self.close,
             content=self.modal_card
@@ -100,11 +100,11 @@ class StyledModal(ft.Container):
                 page.overlay.append(self)
             self.visible = True
             self.is_open=True
-            page.update()
+            page.update(self)
 
     def close(self, e=None):
         if self.is_open:
             self.visible = False
             page = self._get_page(e)
             if page:
-                page.update()
+                self.update()
