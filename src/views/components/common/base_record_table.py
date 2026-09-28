@@ -501,6 +501,7 @@ class BaseRecordGlassTable(GlassDataTable):
         self.filter_modal.close(e)
         self.list_view.update()
         self._update_title_count(visible_count)
+        self.title_text_control.update()
 
     def _clear_filters(self, e=None):
         self.filter_dd_period.value = "all"
@@ -536,6 +537,7 @@ class BaseRecordGlassTable(GlassDataTable):
         self.filter_modal.update()
         self.list_view.update()
         self._update_title_count(visible_count)
+        self.title_text_control.update()
 
     # Eventos de Ciclo de Vida y Modales
     def did_mount(self):
