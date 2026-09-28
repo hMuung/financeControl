@@ -12,7 +12,7 @@ class BaseCollapsibleFormCard(GlassCard):
         title: str,
         title_icon: str = None,
         button_text: str = "Añadir",
-        initially_collapsed: bool = False,
+        initially_collapsed: bool = True,
         collapsed_height: int = 50,
     ):
         self.title_text = title

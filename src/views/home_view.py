@@ -13,6 +13,6 @@ class HomeView(ft.Column):
         )
         self.controls = [
             Header(),
-            QuickExpenseCard(),
-            QuickIncomeCard()
+            QuickExpenseCard(initially_collapsed=False),
+            QuickIncomeCard(initially_collapsed=True)
         ]
