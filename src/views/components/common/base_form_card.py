@@ -1,5 +1,6 @@
 # views/components/common/base_form_card.py
 import flet as ft
+
 from views.components.common.glass_card import GlassCard
 from views.components.common.gradient_button import GradientButton
 from views.utils.theme import BUTTON_GRADIENT
@@ -97,6 +98,7 @@ class BaseCollapsibleFormCard(GlassCard):
 
     def _on_submit_click(self, e):
         """Procesa el formulario y maneja las notificaciones Toast"""
+
         success, message = self.handle_submit()
         if success:
             Toast.success(self.page, message)
@@ -118,6 +120,6 @@ class BaseCollapsibleFormCard(GlassCard):
         """Devuelve la lista de componentes/controles del formulario."""
         raise NotImplementedError("Debe implementar build_fields() en la subclase")
 
-    def handle_submit() -> tuple[bool, str]:
+    def handle_submit(self) -> tuple[bool, str]:
         """Procesa la logica de negocio y retorna (exito, mensaje)."""
         raise NotImplementedError("Debe implementar handle_submit() en la subclase")

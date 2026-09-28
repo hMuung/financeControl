@@ -1,5 +1,6 @@
 # src/views/components/quick_income.py
 import flet as ft
+from typing import Callable, Optional
 
 from controllers.category_controller import CategoryController
 from controllers.income_controller import IncomeController
@@ -10,11 +11,13 @@ from views.components.common.styled_textfield import StyledTextField
 
 
 class QuickIncomeCard(BaseCollapsibleFormCard):
-    def __init__(self, initially_collapsed: bool = False):
+    def __init__(self, on_summit: Optional[Callable] = None, initially_collapsed: bool = False):
         # Inicializar controladores
         self.controller = IncomeController()
         self.category_controller = CategoryController()
         self.origin_controller = OriginController()
+
+        self.on_summit = on_summit
 
         # Iniciar clase base (build_fields())
         super().__init__(
@@ -76,9 +79,15 @@ class QuickIncomeCard(BaseCollapsibleFormCard):
 
     def handle_submit(self) -> tuple[bool, str]:
         # Invocar la logica del controlador de ingresos
-        return self.controller.create_income(
+        result = self.controller.create_income(
             category_id=self.dd_category.key,
             amount_str=self.txt_amount.value,
             origin_id=self.dd_origin.key,
             description=self.txt_description.value,
         )
+
+        success, _ = result
+        if success and self.on_summit:
+            self.on_summit()
+
+        return result
