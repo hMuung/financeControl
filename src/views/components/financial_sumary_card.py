@@ -1,5 +1,9 @@
+# src/views/components/financial_sumary_card.py
 import flet as ft
 import flet_charts as ftch
+import calendar
+from datetime import date, timedelta
+
 
 from controllers.expense_controller import ExpenseController
 from controllers.income_controller import IncomeController
@@ -105,10 +109,19 @@ class FinancialSummaryCard(GlassCard):
         self.icon_period = ft.Icon(initial_icon, size=20, color=HEADER_TEXT_COLOR)
         self.txt_title = ft.Text(initial_title, size=18, weight=ft.FontWeight.BOLD, color=HEADER_TEXT_COLOR)
 
+        # Subtitulo de fecha
+        self.txt_subtitle = ft.Text(
+            self._get_period_subtitle(), 
+            size=12, 
+            color=ft.Colors.GREY_600, 
+            weight=ft.FontWeight.W_400
+        )
+
         self.header_row = ft.Row(
             controls=[
                 self.icon_period,
                 self.txt_title,
+                self.txt_subtitle
             ],
             spacing=15,
             alignment=ft.MainAxisAlignment.CENTER,
@@ -180,6 +193,7 @@ class FinancialSummaryCard(GlassCard):
         title, icon_name = PERIOD_CONFIG.get(self.period, PERIOD_CONFIG["month"])
         self.txt_title.value = title
         self.icon_period.name = icon_name
+        self.txt_subtitle.value = self._get_period_subtitle()
 
     def set_period(self, new_period: str):
         if self.period != new_period and new_period in PERIOD_CONFIG:
@@ -188,6 +202,35 @@ class FinancialSummaryCard(GlassCard):
             self.refresh()
             if self.page:
                 self.update()
+
+    def _get_period_subtitle(self) -> str:
+        today = date.today()
+
+        if self.period == "today":
+            return ""
+
+        elif self.period == "week":
+            # Inicio (Lunes) y Fin (Domingo) de la semana actual
+            start_week = today - timedelta(days=today.weekday())
+            end_week = start_week + timedelta(days=6)
+            return f"{start_week.strftime('%d/%m/%y')} - {end_week.strftime('%d/%m/%y')}"
+
+        elif self.period == "month":
+            # Primer día y último día del mes actual
+            _, last_day = calendar.monthrange(today.year, today.month)
+            start_month = date(today.year, today.month, 1)
+            end_month = date(today.year, today.month, last_day)
+            return f"{start_month.strftime('%d/%m/%y')} - {end_month.strftime('%d/%m/%y')}"
+
+        elif self.period == "year":
+            return f"{today.year}"
+
+        elif self.period == "all_time":
+            # Puedes definir el año inicial de tus registros (ej. 2024)
+            start_year = 2024
+            return f"{start_year} - Presente"
+
+        return ""
 
     def _build_legend_row(self, title: str, text_control: ft.Text, color: str) -> ft.Control:
         return ft.Row(

@@ -78,7 +78,6 @@ class RecordView(ft.Column):
         ]
 
     def did_mount(self):
-        print("here")
         self.load_expense_history()
         self.load_income_history()
 
