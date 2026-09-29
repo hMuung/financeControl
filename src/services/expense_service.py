@@ -10,7 +10,9 @@ class ExpenseService:
 
     _totals: dict = {
         "today": {"total": 0.0, "by_category": {}},
+        "yesterday": {"total": 0.0, "by_category": {}},
         "week": {"total": 0.0, "by_category": {}},
+        "last_week": {"total": 0.0, "by_category": {}},
         "month": {"total": 0.0, "by_category": {}},
         "year": {"total": 0.0, "by_category": {}},
         "all_time": {"total": 0.0, "by_category": {}},
@@ -20,7 +22,7 @@ class ExpenseService:
     def __init__(self, db_name=DB_NAME):
         self.db_name = db_name
         self._init_db()
-        self._seed_if_empty()
+        #self._seed_if_empty()
 
     @staticmethod
     def _get_active_periods(date_str: str) -> list[str]:
@@ -47,9 +49,11 @@ class ExpenseService:
 
     @classmethod
     def _reset_totals(cls):
-        cls._totals = {
+        cls._totals: dict = {
             "today": {"total": 0.0, "by_category": {}},
+            "yesterday": {"total": 0.0, "by_category": {}},
             "week": {"total": 0.0, "by_category": {}},
+            "last_week": {"total": 0.0, "by_category": {}},
             "month": {"total": 0.0, "by_category": {}},
             "year": {"total": 0.0, "by_category": {}},
             "all_time": {"total": 0.0, "by_category": {}},
@@ -61,13 +65,22 @@ class ExpenseService:
         now = datetime.now().date()
 
         today_str = now.strftime("%Y-%m-%d")
-        start_week_str = (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d")
+        yesterday_str = (now - timedelta(days=1)).strftime("%Y-%m-%d")
+
+        start_week = now - timedelta(days=now.weekday())
+        start_week_str = start_week.strftime("%Y-%m-%d")
+
+        start_last_week_str = (start_week - timedelta(days=7)).strftime("%Y-%m-%d")
+        end_last_week_str = (start_week - timedelta(days=1)).strftime("%Y-%m-%d")
+
         start_month_str = now.replace(day=1).strftime("%Y-%m-%d")
         start_year_str = now.replace(month=1, day=1).strftime("%Y-%m-%d")
 
         periods_query = {
             "today": "WHERE date = ?",
+            "yesterday": "WHERE date = ?",
             "week": "WHERE date >= ?",
+            "last_week": "WHERE date BETWEEN ? AND ?",
             "month": "WHERE date >= ?",
             "year": "WHERE date >= ?",
             "all_time": "",
@@ -75,7 +88,9 @@ class ExpenseService:
 
         params_map = {
             "today": (today_str,),
+            "yesterday": (yesterday_str,),
             "week": (start_week_str,),
+            "last_week": (start_last_week_str, end_last_week_str),
             "month": (start_month_str,),
             "year": (start_year_str,),
             "all_time": (),
@@ -83,7 +98,7 @@ class ExpenseService:
 
         totals = {
             p: {"total": 0.0, "by_category": {}}
-            for p in ["today", "week", "month", "year", "all_time"]
+            for p in ["today", "yesterday", "week", "last_week", "month", "year", "all_time"]
         }
 
         with sqlite3.connect(db_name) as conn:

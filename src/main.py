@@ -115,12 +115,20 @@ def main(page: ft.Page):
         ),
     )
 
+    app_layout_s = ft.Stack(
+        expand=True,
+        controls=[
+            safe_content,
+        ],
+    )
+
     app_layout = ft.Stack(
-        width=page.width,
-        height=page.height,
+        expand=True,
+        #width=page.width,
+        #height=page.height,
         controls=[
             Background(),
-            safe_content,
+            app_layout_s,
         ],
     )
 

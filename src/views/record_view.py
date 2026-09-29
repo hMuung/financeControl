@@ -19,7 +19,7 @@ class RecordView(ft.Column):
         self.category_controller = CategoryController()
         self.origin_controller = OriginController()
 
-        # Cargar opciones de categorías y orígenes
+        # Cargar opciones de categorías y origenes
         expense_categories = self.category_controller.get_expense_categories()
         expense_origins = self.origin_controller.get_expense_origins()
         income_categories = getattr(self.category_controller, "get_income_categories", lambda: [])()

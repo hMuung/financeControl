@@ -8,7 +8,7 @@ class OriginService:
     def __init__(self, db_name=DB_NAME):
         self.db_name = db_name
         self._init_db()
-        self._seed_if_empty()
+        #self._seed_if_empty()
 
     def _init_db(self):
         with sqlite3.connect(self.db_name) as conn:

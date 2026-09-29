@@ -38,6 +38,8 @@ class GlassDataTable(ft.Stack):
 
         self.header_row = self._build_header_row()
 
+        self.empty_control = self._build_empty_control()
+
         self.list_view = ft.ListView(
             expand=True,
             spacing=2,
@@ -198,7 +200,10 @@ class GlassDataTable(ft.Stack):
             pass
         return val_str
 
-    def _update_title_count(self):
+    def _update_title_count(self,count: int = None):
+        if count:
+            self.title_text_control.value = f"{self.title_text} ({count})"
+            return
         self.title_text_control.value = f"{self.title_text} ({len(self.data)})"
 
     def _build_header_row(self) -> ft.Container:
@@ -274,6 +279,7 @@ class GlassDataTable(ft.Stack):
         )
 
         row_container.data = item.get("id")
+        row_container.item_data = item
         return row_container
 
     def _handle_row_click(self, e, item: dict):
@@ -282,9 +288,10 @@ class GlassDataTable(ft.Stack):
             self.on_row_click(e, item)
 
     def _build_rows(self) -> list[ft.Control]:
-        if not self.data:
-            return [self._build_empty_control()]
-        return [self._build_single_row(item) for item in self.data]
+        controls = [self._build_single_row(item) for item in self.data]
+        self.empty_control.visible = len(self.data) == 0
+        controls.append(self.empty_control)
+        return controls
 
     def _update_row_cells(self, row_ctrl: ft.Container, item: dict):
         if not hasattr(row_ctrl, "content") or not isinstance(row_ctrl.content, ft.Row):
@@ -317,20 +324,22 @@ class GlassDataTable(ft.Stack):
 
         updated_controls = []
 
-        if not new_data:
-            updated_controls = [self._build_empty_control()]
-        else:
-            for item in new_data:
-                item_id = item.get("id")
+        for item in new_data:
+            item_id = item.get("id")
 
-                if item_id is not None and item_id in existing_controls_map:
-                    row_ctrl = existing_controls_map[item_id]
-                    self._update_row_cells(row_ctrl, item)
-                    updated_controls.append(row_ctrl)
-                else:
-                    updated_controls.append(self._build_single_row(item))
+            if item_id is not None and item_id in existing_controls_map:
+                row_ctrl = existing_controls_map[item_id]
+                self._update_row_cells(row_ctrl, item)
+                row_ctrl.item_data = item
+                row_ctrl.visible = True
+                updated_controls.append(row_ctrl)
+            else:
+                updated_controls.append(self._build_single_row(item))
 
         self.data = new_data
+        self.empty_control.visible = len(new_data) == 0
+        updated_controls.append(self.empty_control)
+
         self.list_view.controls = updated_controls
         self._update_title_count()
 
