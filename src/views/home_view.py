@@ -4,6 +4,8 @@ import flet as ft
 from views.components.common.floating_button import FloatingButton
 from views.components.common.header import Header
 
+from views.components.common.styled_textfield import StyledTextField
+
 
 @ft.control
 class HomeView(ft.Stack):
@@ -49,4 +51,4 @@ class HomeView(ft.Stack):
         ]
 
     def _handle_floating_button_click(self,e):
-        print("1",type(self), type(e))
+        pass
