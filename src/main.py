@@ -2,7 +2,7 @@
 import flet as ft
 import sqlite3
 
-from config import APP_ICON_PATH, BASE_DIR, DB_NAME
+from config import APP_ICON_PATH, DB_NAME, ASSETS_DIR
 
 from views.components.background import Background
 from views.components.bottom_bar import ModernGlassBottomBar
@@ -96,7 +96,7 @@ def main(page: ft.Page):
             int(e.data) if isinstance(e.data, str) else e.control.selected_index
         )
         check_and_reload(new_index)
-        bottom_bar.set_selected_index(new_index, notify=False)
+        #bottom_bar.set_selected_index(new_index, notify=False)
 
     page_view.on_change = on_page_swipe
 
@@ -107,7 +107,7 @@ def main(page: ft.Page):
             content=ft.Column(
                 controls=[
                     page_view,
-                    bottom_bar,
+                    #bottom_bar,
                 ],
                 spacing=10,
                 expand=True,
@@ -137,4 +137,4 @@ def main(page: ft.Page):
 
 
 if __name__ == "__main__":
-    ft.run(main, assets_dir=str(BASE_DIR))
+    ft.run(main, assets_dir=str(ASSETS_DIR))

@@ -508,6 +508,7 @@ class BaseRecordGlassTable(GlassDataTable):
                     self.list_view.controls = [self._build_empty_control()]
 
                 self._update_amount_filter_range()
+                self._update_title_count(len(self.data))
                 self.update()
             else:
                 Toast.error(page, message)

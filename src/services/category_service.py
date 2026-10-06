@@ -9,7 +9,7 @@ class CategoryService:
     def __init__(self, db_name=DB_NAME):
         self.db_name = db_name
         self._init_db()
-        #self._seed_if_empty()
+        self._seed_if_empty()
 
     def _init_db(self):
         with sqlite3.connect(self.db_name) as conn:
@@ -17,11 +17,12 @@ class CategoryService:
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS categories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL UNIQUE,
+                    name TEXT NOT NULL,
                     color TEXT,
                     bg_color TEXT,
                     icon TEXT,
-                    type TEXT NOT NULL DEFAULT 'EXPENSE'
+                    type TEXT NOT NULL DEFAULT 'EXPENSE',
+                    UNIQUE(name, type)
                 )
             """)
             conn.commit()
@@ -34,7 +35,7 @@ class CategoryService:
                 sample_categories = seed_categories
                 # sample_categories debe contener tuplas con 5 elementos: (name, color, bg_color, icon, type)
                 cursor.executemany(
-                    "INSERT INTO categories (name, color, bg_color, icon, type) VALUES (?, ?, ?, ?, ?)",
+                    "INSERT OR IGNORE INTO categories (name, color, bg_color, icon, type) VALUES (?, ?, ?, ?, ?)",
                     sample_categories
                 )
                 conn.commit()

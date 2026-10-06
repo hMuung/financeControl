@@ -1,6 +1,6 @@
 # src/views/utils/toast.py
 import flet as ft
-from src.views.utils.theme import TOAST_COLORS
+from views.utils.theme import TOAST_COLORS
 
 
 class Toast:

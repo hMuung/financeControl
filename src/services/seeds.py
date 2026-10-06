@@ -2,35 +2,46 @@
 
 seed_categories = [
     # EXPENSE
-    ("Comida", "#388E3C", "#E8F5E9", "restaurant", "EXPENSE"),
-    ("Transporte", "#F57C00", "#FFF3E0", "directions_car", "EXPENSE"),
-    ("Servicios", "#D32F2F", "#FFEBEE", "receipt_long", "EXPENSE"),
-    ("Entretenimiento", "#7B1FA2", "#F3E5F5", "movie", "EXPENSE"),
-    ("Salud", "#0097A7", "#E0F7FA", "medical_services", "EXPENSE"),
-    ("Compras", "#C2185B", "#FCE4EC", "shopping_bag", "EXPENSE"),
+    ("Comida", "#E65100", "#FFF3E0", "restaurant", "EXPENSE"),       # Naranja cálido
+    ("Transporte", "#F57C00", "#FFF3E0", "directions_car", "EXPENSE"),# Naranja / Ámbar
+    ("Servicios", "#D32F2F", "#FFEBEE", "receipt_long", "EXPENSE"),   # Rojo alerta
+    ("Entretenimiento", "#7B1FA2", "#F3E5F5", "movie", "EXPENSE"),   # Morado / Ocio
+    ("Casa", "#1565C0", "#E8EAF6", "home", "EXPENSE"),               # Azul hogar
+    ("Salud", "#0097A7", "#E0F7FA", "medical_services", "EXPENSE"),  # Cyan / Salud
+    ("Extras", "#C2185B", "#FCE4EC", "shopping_bag", "EXPENSE"),     # Rosa / Shopping
+    ("Inversion", "#2E7D32", "#E8F5E9", "trending_up", "EXPENSE"),   # Verde / Crecimiento
 
     # INCOME
-    ("Salario", "#2E7D32", "#E8F5E9", "work", "INCOME"),
-    ("Ventas", "#1976D2", "#E3F2FD", "storefront", "INCOME"),
-    ("Freelance", "#00796B", "#E0F2F1", "laptop", "INCOME"),
-    ("Inversiones", "#FBC02D", "#FFFDE7", "trending_up", "INCOME"),
-    ("Regalos / Bonos", "#E64A19", "#FBE9E7", "card_giftcard", "INCOME"),
+    ("Salario", "#2E7D32", "#E8F5E9", "work", "INCOME"),             # Verde institucional
+    ("Tiempo extra", "#33691E", "#F1F8E9", "schedule", "INCOME"),    # Verde lima
+    ("Vales", "#558B2F", "#F1F8E9", "card_giftcard", "INCOME"),      # Verde oliva
+    ("Ventas", "#1976D2", "#E3F2FD", "storefront", "INCOME"),        # Azul comercial
+    ("Freelance", "#00796B", "#E0F2F1", "laptop", "INCOME"),        # Teal / Turquesa
+    ("Inversiones", "#F57F17", "#FFFDE7", "trending_up", "INCOME"),  # Dorado / Crecimiento
+    ("Bonos", "#E64A19", "#FBE9E7", "card_giftcard", "INCOME"),      # Naranja rojizo
+    ("Regalos", "#D81B60", "#FCE4EC", "redeem", "INCOME"),           # Magenta / Regalo
 ]
 
 seed_origin = [
     # EXPENSE
-    ("Efectivo", "#2E7D32", "#E8F5E9", "payments", "EXPENSE"),
-    ("Tarjeta de Débito", "#0277BD", "#E1F5FE", "credit_card", "EXPENSE"),
-    ("Tarjeta de Crédito", "#C2185B", "#FCE4EC", "credit_card", "EXPENSE"),
-    ("Transferencia Bancaria", "#1976D2", "#E3F2FD", "account_balance", "EXPENSE"),
-    ("Billetera Digital", "#0097A7", "#E0F7FA", "account_balance_wallet", "EXPENSE"),
+    ("Efectivo", "#2E7D32", "#E8F5E9", "payments", "EXPENSE"),       # Verde billete
+    ("TDD BBVA", "#1464A5", "#E3F2FD", "credit_card", "EXPENSE"),    # Azul BBVA
+    ("TDC BBVA", "#D4AF37", "#FFF8E1", "credit_card", "EXPENSE"),    # Oro BBVA (TDC Oro/Platinum)
+    ("TDD NU", "#820AD1", "#F3E5F5", "credit_card", "EXPENSE"),      # Morado Nu
+    ("TDC NU", "#5E17EB", "#EDE7F6", "credit_card", "EXPENSE"),      # Violeta/Morado obscuro Nu
+    ("TDD AZTECA", "#006837", "#E8F5E9", "credit_card", "EXPENSE"),  # Verde Azteca
+    ("Otros", "#607D8B", "#ECEFF1", "payments", "EXPENSE"),          # Gris neutro
 
     # INCOME
-    ("Cuenta de Nómina", "#2E7D32", "#E8F5E9", "business", "INCOME"),
-    ("Cuenta de Ahorros", "#0277BD", "#E1F5FE", "account_balance", "INCOME"),
-    ("Efectivo en Mano", "#388E3C", "#E8F5E9", "payments", "INCOME"),
-    ("Pago de Cliente", "#7B1FA2", "#F3E5F5", "person", "INCOME"),
-    ("Plataforma Digital (PayPal/Stripe)", "#00796B", "#E0F2F1", "devices", "INCOME"),
+    ("Nomina", "#1B5E20", "#E8F5E9", "business", "INCOME"),          # Verde oscuro institucional
+    ("Efectivo", "#2E7D32", "#E8F5E9", "payments", "INCOME"),        # Verde billete
+    ("Venta", "#6A1B9A", "#F3E5F5", "person", "INCOME"),             # Morado negocio
+    ("TDD BBVA", "#1464A5", "#E3F2FD", "credit_card", "INCOME"),     # Azul BBVA
+    ("TDC BBVA", "#D4AF37", "#FFF8E1", "credit_card", "INCOME"),     # Oro BBVA
+    ("TDD NU", "#820AD1", "#F3E5F5", "credit_card", "INCOME"),       # Morado Nu
+    ("TDC NU", "#5E17EB", "#EDE7F6", "credit_card", "INCOME"),       # Violeta Nu
+    ("TDD AZTECA", "#006837", "#E8F5E9", "credit_card", "INCOME"),   # Verde Azteca
+    ("Otros", "#607D8B", "#ECEFF1", "payments", "INCOME"),           # Gris neutro
 ]
 
 seed_expenses = [

@@ -8,7 +8,7 @@ class OriginService:
     def __init__(self, db_name=DB_NAME):
         self.db_name = db_name
         self._init_db()
-        #self._seed_if_empty()
+        self._seed_if_empty()
 
     def _init_db(self):
         with sqlite3.connect(self.db_name) as conn:
@@ -16,11 +16,12 @@ class OriginService:
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS origins (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL UNIQUE,
+                    name TEXT NOT NULL,
                     color TEXT,
                     bg_color TEXT,
                     icon TEXT,
-                    type TEXT NOT NULL DEFAULT 'EXPENSE'
+                    type TEXT NOT NULL DEFAULT 'EXPENSE',
+                    UNIQUE(name, type)
                 )
             """)
             conn.commit()
@@ -33,7 +34,7 @@ class OriginService:
                 sample_origins = seed_origin
                 # seed_origin debe incluir 5 valores: (name, color, bg_color, icon, type)
                 cursor.executemany(
-                    "INSERT INTO origins (name, color, bg_color, icon, type) VALUES (?, ?, ?, ?, ?)",
+                    "INSERT OR IGNORE INTO origins (name, color, bg_color, icon, type) VALUES (?, ?, ?, ?, ?)",
                     sample_origins
                 )
                 conn.commit()

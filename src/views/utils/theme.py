@@ -1,79 +1,49 @@
-# src/views/utils/theme.py
 import flet as ft
 
-BACKGROUND_GRADIENT = ft.LinearGradient(
-    begin=ft.Alignment(-1, -1),
-    end=ft.Alignment(1, 1),
-    colors=["#75E2CD", "#B69CDA", "#EC99BD"],
-    stops=[0.0, 0.5, 1.0],
+# BASE DEL SISTEMA (FONDO Y SUPERFICIES)
+COLOR_BG_MAIN = "#09070F"  # Fondo principal negro violaceo profundo
+COLOR_SURFACE_CARD = "#151026"  # Superficie elevada para tarjetas base y contenedores
+COLOR_ACCENT_PRIMARY = "#9D4EDD"  # Acento primario morado neon
+COLOR_ACCENT_BRIGHT = "#C77DFF"  # Acento brillante para elementos activos o destacados
+
+# TARJETA CRISTALINA (GLASSMORPHISM)
+# Gradiente traslucido de fondo para el efecto de cristal
+GRADIENT_GLASS_CARD = ft.LinearGradient(
+    begin=ft.Alignment.TOP_LEFT,
+    end=ft.Alignment.BOTTOM_RIGHT,
+    colors=["#14FFFFFF", "#0D9D4EDD"],  # Blanco 8% a Morado 5% de opacidad (Formato ARGB)
 )
 
-BUTTON_GRADIENT = ft.LinearGradient(
-    begin=ft.Alignment(-1, 0),
-    end=ft.Alignment(1, 0),
-    colors=["#FFA07A", "#FF7F50"],
+COLOR_GLASS_BORDER_TOP = "#33FFFFFF"  # Borde superior e izquierdo (reflejo de luz, 20% opacidad)
+COLOR_GLASS_BORDER_BOTTOM = "#269D4EDD"  # Borde inferior y derecho (sombra de color, 15% opacidad)
+
+# TIPOGRAFIA (TEXTOS Y TITULOS)
+TEXT_PRIMARY = "#FFFFFF"  # Titulos principales, balances e informacion critica
+TEXT_SECONDARY = "#E2D9F3"  # Textos de cuerpo, subtitulos y lecturas largas
+TEXT_MUTED = "#8E82A0"  # Etiquetas secundarias, placeholders y textos tenues
+TEXT_DISABLED = "#4D435D"  # Estado deshabilitado o elementos inactivos
+
+# CAMPOS DE TEXTO E INPUTS
+INPUT_BG_IDLE = "#0AFFFFFF"  # Fondo del campo de texto en reposo (4% opacidad)
+INPUT_BORDER_IDLE = "#1AFFFFFF"  # Borde del campo de texto en reposo (10% opacidad)
+INPUT_BORDER_FOCUS = "#9D4EDD"  # Borde activo cuando el campo recibe foco
+
+# BOTONES Y ACCIONES
+# Gradiente para boton de accion principal
+GRADIENT_BTN_PRIMARY = ft.LinearGradient(
+    begin=ft.alignment.top_left,
+    end=ft.alignment.bottom_right,
+    colors=["#7B2CBF", "#9D4EDD"],
 )
 
-CANCEL_GRADIENT = ft.LinearGradient(
-    begin=ft.Alignment(-1, 0),
-    end=ft.Alignment(1, 0),
-    colors=["#E56B6F", "#F28482"],
+# Gradiente del boton principal al interactuar (Hover/Press)
+GRADIENT_BTN_PRIMARY_HOVER = ft.LinearGradient(
+    begin=ft.Alignment.TOP_LEFT,
+    end=ft.Alignment.BOTTOM_RIGHT,
+    colors=["#9D4EDD", "#C77DFF"],
 )
 
-ACCEPT_GRADIENT = ft.LinearGradient(
-    begin=ft.Alignment(-1, 0),
-    end=ft.Alignment(1, 0),
-    colors=["#38A3A5", "#57CC99"],
-)
-
-MODIFI_GRADIENT = ft.LinearGradient(
-    begin=ft.Alignment(-1, 0),
-    end=ft.Alignment(1, 0),
-    colors=["#5C7AEA", "#7D92E8"],
-)
-
-DELETE_GRADIENT = ft.LinearGradient(
-    begin=ft.Alignment(-1, 0),
-    end=ft.Alignment(1, 0),
-    colors=["#D05353", "#E87A7A"],
-)
-
-MODAL_SHADOW = ft.BoxShadow(
-    blur_radius=30,
-    color=ft.Colors.BLACK_45,
-    offset=ft.Offset(0, 10),
-)
-
-# Valores del header
-HEADER_TEXT_COLOR = "#2D3748"
-
-# Valores para el efecto Cristal / Espejo
-GLASS_BG_COLOR = ft.Colors.with_opacity(0.4, ft.Colors.WHITE)
-GLASS_BORDER_COLOR = ft.Colors.with_opacity(0.6, ft.Colors.WHITE)
-GLASS_BORDER_RADIUS = 20
-
-# Transparencia e iconos inactivos
-INACTIVE_ICON_COLOR = ft.Colors.with_opacity(0.7, "#3D2A54")
-TRANSPARENT_GRADIENT = ft.LinearGradient(
-    colors=[ft.Colors.TRANSPARENT, ft.Colors.TRANSPARENT]
-)
-
-# Colores para los Toasts por tipo
-TOAST_COLORS = {
-    "success": {
-        "primary": ft.Colors.GREEN_700,
-        "secondary": ft.Colors.GREEN_500,
-    },
-    "error": {
-        "primary": ft.Colors.RED_700,
-        "secondary": ft.Colors.RED_500,
-    },
-    "warning": {
-        "primary": ft.Colors.AMBER_800,
-        "secondary": ft.Colors.AMBER_500,
-    },
-    "info": {
-        "primary": ft.Colors.BLUE_700,
-        "secondary": ft.Colors.BLUE_500,
-    },
-}
+COLOR_BTN_SECONDARY_BG = "#0FFFFFFF"  # Fondo de boton secundario estilo cristal
+COLOR_BTN_SECONDARY_BORDER = "#4DC77DFF"  # Borde acentuado para boton secundario
+COLOR_BTN_SECONDARY_TEXT = "#E0AAFF"  # Texto vibrante para boton secundario
+COLOR_BTN_TERTIARY_TEXT = "#8E82A0"  # Texto de boton terciario o accion de cancelar

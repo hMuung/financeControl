@@ -17,6 +17,4 @@ APP_ICON_PATH = ICONS_DIR / "appIcon.png"
 
 MAX_MENU_HEIGHT = 350
 
-DB_NAME = "finance_control.db"
-
-print("New Start")
+DB_NAME = str(BASE_DIR / "finance_control.db")
