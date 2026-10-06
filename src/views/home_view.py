@@ -1,16 +1,52 @@
 # src/views/home_view.py
 import flet as ft
 
+from views.components.common.floating_button import FloatingButton
 from views.components.common.header import Header
 
 
 @ft.control
-class HomeView(ft.Column):
-    spacing: int = 10
-    scroll: ft.ScrollMode = ft.ScrollMode.HIDDEN
+class HomeView(ft.Stack):
     expand: bool = True
-
     def init(self):
+
+        # Contenido principal
+        main_content = ft.Column(
+            spacing=10,
+            scroll=ft.ScrollMode.HIDDEN,
+            expand=True,
+            controls=[
+                Header(
+                    title="CASH FLOW REGISTER",
+                    logo_src=ft.Icons.ATTACH_MONEY_ROUNDED
+                ),
+            ],
+        )
+
+        # Boton flotante
+        floating_button = FloatingButton(
+            icon=ft.Icons.ADD,
+            on_click=self._handle_floating_button_click,
+        )
+
+        floating_button_column = ft.Column(
+            controls=[
+                floating_button,
+                ft.Container( # Spacing container
+                    height=0,
+                    width=float("inf")
+                )
+            ],
+            expand=True,
+            alignment=ft.MainAxisAlignment.END,
+            horizontal_alignment=ft.CrossAxisAlignment.END
+        )
+        
+
         self.controls = [
-            Header(title="CASH FLOW REGISTER"),
+            main_content,
+            floating_button_column
         ]
+
+    def _handle_floating_button_click(self,e):
+        print("1",type(self), type(e))

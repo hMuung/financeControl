@@ -34,6 +34,7 @@ def main(page: ft.Page):
         expand=True,
         controls=[
             home_view,
+            EmptyView(message="Historial"),
             EmptyView(message="Proyeccion"),
             EmptyView(message="Analisis"),
             EmptyView(message="Mas"),
@@ -61,6 +62,8 @@ def main(page: ft.Page):
     )
 
     page.add(app_layout)
+
+    print("New start")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 # src/views/utils/theme.py
-from flet import Alignment, LinearGradient
+from flet import Alignment, LinearGradient, BoxShadow, Offset
 
 # BASE DEL SISTEMA (FONDO Y SUPERFICIES)
 COLOR_BG_MAIN = "#09070F"  # Fondo principal negro violaceo profundo
@@ -49,6 +49,13 @@ GRADIENT_BTN_PRIMARY_HOVER = LinearGradient(
     begin=Alignment.TOP_LEFT,
     end=Alignment.BOTTOM_RIGHT,
     colors=["#9D4EDD", "#C77DFF"],
+)
+
+FLOATING_BUTTON_SHADOW = BoxShadow(
+    spread_radius=1,
+    blur_radius=12,
+    color="#66000000",
+    offset=Offset(0, 4),
 )
 
 COLOR_BTN_SECONDARY_BG = "#0FFFFFFF"  # Fondo de boton secundario estilo cristal

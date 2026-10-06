@@ -1,14 +1,14 @@
 # src/views/components/common/header.py
 import flet as ft
 
-from config import APP_LOGO_PATH
 from views.utils.theme import TEXT_PRIMARY
 
 
 @ft.control
 class Header(ft.Row):
     title: str = "EMPTY"
-    logo_src: str | ft.Control | None = str(APP_LOGO_PATH)
+    logo_src: str = ft.Icons.ABC
+    logo_size: int = 30
     title_color: str = TEXT_PRIMARY
     spacing: int = 12
     alignment: ft.MainAxisAlignment = ft.MainAxisAlignment.START
@@ -19,9 +19,7 @@ class Header(ft.Row):
         if self.logo_src is not None:
             logo_content = None
 
-            if isinstance(self.logo_src, ft.Control):
-                logo_content = self.logo_src
-            elif isinstance(self.logo_src, str):
+            if isinstance(self.logo_src, str):
                 is_image_path = any(
                     self.logo_src.lower().endswith(ext)
                     for ext in [".png", ".jpg", ".jpeg", ".svg", ".webp", ".ico"]
@@ -29,10 +27,16 @@ class Header(ft.Row):
                 if is_image_path:
                     logo_content = ft.Image(
                         src=self.logo_src,
-                        width=40,
-                        height=40,
+                        width=self.logo_size,
+                        height=self.logo_size,
                         fit=ft.BoxFit.CONTAIN,
                     )
+            else:
+                logo_content = ft.Icon(
+                    icon=self.logo_src,
+                    size=self.logo_size,
+                    color=self.title_color,
+                )
 
             if logo_content:
                 controls.append(
