@@ -8,3 +8,4 @@ test/
 pyproject.toml
 build/
 storage/
+gcm-diagnose.log

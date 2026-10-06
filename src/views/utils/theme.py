@@ -1,4 +1,5 @@
-import flet as ft
+# src/views/utils/theme.py
+from flet import Alignment, LinearGradient
 
 # BASE DEL SISTEMA (FONDO Y SUPERFICIES)
 COLOR_BG_MAIN = "#09070F"  # Fondo principal negro violaceo profundo
@@ -6,11 +7,18 @@ COLOR_SURFACE_CARD = "#151026"  # Superficie elevada para tarjetas base y conten
 COLOR_ACCENT_PRIMARY = "#9D4EDD"  # Acento primario morado neon
 COLOR_ACCENT_BRIGHT = "#C77DFF"  # Acento brillante para elementos activos o destacados
 
+# GRADIENTE DE FONDO
+BACKGROUND_GRADIENT = LinearGradient(
+    begin=Alignment.TOP_LEFT,
+    end=Alignment.BOTTOM_RIGHT,
+    colors=[COLOR_BG_MAIN, COLOR_SURFACE_CARD],
+)
+
 # TARJETA CRISTALINA (GLASSMORPHISM)
 # Gradiente traslucido de fondo para el efecto de cristal
-GRADIENT_GLASS_CARD = ft.LinearGradient(
-    begin=ft.Alignment.TOP_LEFT,
-    end=ft.Alignment.BOTTOM_RIGHT,
+GRADIENT_GLASS_CARD = LinearGradient(
+    begin=Alignment.TOP_LEFT,
+    end=Alignment.BOTTOM_RIGHT,
     colors=["#14FFFFFF", "#0D9D4EDD"],  # Blanco 8% a Morado 5% de opacidad (Formato ARGB)
 )
 
@@ -30,16 +38,16 @@ INPUT_BORDER_FOCUS = "#9D4EDD"  # Borde activo cuando el campo recibe foco
 
 # BOTONES Y ACCIONES
 # Gradiente para boton de accion principal
-GRADIENT_BTN_PRIMARY = ft.LinearGradient(
-    begin=ft.alignment.top_left,
-    end=ft.alignment.bottom_right,
+GRADIENT_BTN_PRIMARY = LinearGradient(
+    begin=Alignment.TOP_LEFT,
+    end=Alignment.BOTTOM_RIGHT,
     colors=["#7B2CBF", "#9D4EDD"],
 )
 
 # Gradiente del boton principal al interactuar (Hover/Press)
-GRADIENT_BTN_PRIMARY_HOVER = ft.LinearGradient(
-    begin=ft.Alignment.TOP_LEFT,
-    end=ft.Alignment.BOTTOM_RIGHT,
+GRADIENT_BTN_PRIMARY_HOVER = LinearGradient(
+    begin=Alignment.TOP_LEFT,
+    end=Alignment.BOTTOM_RIGHT,
     colors=["#9D4EDD", "#C77DFF"],
 )
 

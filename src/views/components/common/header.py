@@ -1,64 +1,57 @@
 # src/views/components/common/header.py
-# src/views/components/header.py
 import flet as ft
+
 from config import APP_LOGO_PATH
-from views.utils.theme import HEADER_TEXT_COLOR
+from views.utils.theme import TEXT_PRIMARY
 
-def Header(
-    title: str = "FINANCE CENTRAL", 
-    logo_src: str | ft.Control | ft.Icon | None = str(APP_LOGO_PATH),
-    title_color: str = HEADER_TEXT_COLOR
-) -> ft.Row:
-    "Componente de encabezado"
-    controls = []
 
-    if logo_src is not None:
+@ft.control
+class Header(ft.Row):
+    title: str = "EMPTY"
+    logo_src: str | ft.Control | None = str(APP_LOGO_PATH)
+    title_color: str = TEXT_PRIMARY
+    spacing: int = 12
+    alignment: ft.MainAxisAlignment = ft.MainAxisAlignment.START
 
-        logo_content = None
+    def init(self):
+        controls = []
 
-        # Si ya es un Control
-        if isinstance(logo_src, ft.Control):
-            logo_content = logo_src
+        if self.logo_src is not None:
+            logo_content = None
 
-        elif isinstance(logo_src, str):
-            # Comprobar si es una ruta de archivo
-            is_image_path = (
-                any(logo_src.lower().endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".svg", ".webp", ".ico"])
-            )
-            
-            if is_image_path:
-                logo_content = ft.Image(
-                    src=logo_src, 
-                    width=40,
-                    height=40,
-                    fit="contain",
+            if isinstance(self.logo_src, ft.Control):
+                logo_content = self.logo_src
+            elif isinstance(self.logo_src, str):
+                is_image_path = any(
+                    self.logo_src.lower().endswith(ext)
+                    for ext in [".png", ".jpg", ".jpeg", ".svg", ".webp", ".ico"]
                 )
-        elif isinstance(logo_src,ft.Icon):
-            logo_content = logo_src
+                if is_image_path:
+                    logo_content = ft.Image(
+                        src=self.logo_src,
+                        width=40,
+                        height=40,
+                        fit=ft.BoxFit.CONTAIN,
+                    )
 
-        if logo_content:
-            controls.append(
-                ft.Container(
-                    content=logo_content,
-                    bgcolor=ft.Colors.TRANSPARENT,
-                    padding=0,
-                    border_radius=12,
-                    alignment=ft.Alignment.CENTER,
+            if logo_content:
+                controls.append(
+                    ft.Container(
+                        content=logo_content,
+                        bgcolor=ft.Colors.TRANSPARENT,
+                        padding=0,
+                        border_radius=12,
+                        alignment=ft.Alignment.CENTER,
+                    )
                 )
-            )
 
-    # Añadir el titulo
-    controls.append(
-        ft.Text(
-            title,
-            size=28,
-            weight=ft.FontWeight.BOLD,
-            color=title_color,
+        controls.append(
+            ft.Text(
+                self.title,
+                size=28,
+                weight=ft.FontWeight.BOLD,
+                color=self.title_color,
+            )
         )
-    )
 
-    return ft.Row(
-        controls=controls,
-        spacing=12,
-        alignment=ft.MainAxisAlignment.START,
-    )
+        self.controls = controls
