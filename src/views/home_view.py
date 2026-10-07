@@ -3,8 +3,9 @@ import flet as ft
 
 from views.components.common.floating_button import FloatingButton
 from views.components.common.header import Header
+from views.components.common.modal_base import ModalBase
 
-from views.components.common.styled_textfield import StyledTextField
+from views.utils.theme import COLOR_ACCENT_PRIMARY
 
 
 @ft.control
@@ -22,6 +23,10 @@ class HomeView(ft.Stack):
                     title="CASH FLOW REGISTER",
                     logo_src=ft.Icons.ATTACH_MONEY_ROUNDED
                 ),
+                ft.Divider(
+                    color=COLOR_ACCENT_PRIMARY,
+                    height=2
+                )
             ],
         )
 
@@ -50,5 +55,7 @@ class HomeView(ft.Stack):
             floating_button_column
         ]
 
-    def _handle_floating_button_click(self,e):
+    def _handle_floating_button_click(self, e: ft.ControlEvent):
+        base = ModalBase()
+        base.open_dialog(self.page)
         pass

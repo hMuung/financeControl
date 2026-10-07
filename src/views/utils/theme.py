@@ -2,10 +2,11 @@
 from flet import Alignment, LinearGradient, BoxShadow, Offset
 
 # BASE DEL SISTEMA (FONDO Y SUPERFICIES)
-COLOR_BG_MAIN = "#09070F"  # Fondo principal negro violaceo profundo
+COLOR_BG_MAIN = "#21193A"  # Fondo principal negro violaceo profundo
 COLOR_SURFACE_CARD = "#151026"  # Superficie elevada para tarjetas base y contenedores
 COLOR_ACCENT_PRIMARY = "#9D4EDD"  # Acento primario morado neon
 COLOR_ACCENT_BRIGHT = "#C77DFF"  # Acento brillante para elementos activos o destacados
+
 
 # GRADIENTE DE FONDO
 BACKGROUND_GRADIENT = LinearGradient(
@@ -22,8 +23,16 @@ GRADIENT_GLASS_CARD = LinearGradient(
     colors=["#14FFFFFF", "#0D9D4EDD"],  # Blanco 8% a Morado 5% de opacidad (Formato ARGB)
 )
 
-COLOR_GLASS_BORDER_TOP = "#33FFFFFF"  # Borde superior e izquierdo (reflejo de luz, 20% opacidad)
-COLOR_GLASS_BORDER_BOTTOM = "#269D4EDD"  # Borde inferior y derecho (sombra de color, 15% opacidad)
+# Resplandor morado para el cristal
+GLASS_CARD_SHADOW = BoxShadow(
+    spread_radius=1,
+    blur_radius=20,
+    color="#4D9D4EDD",  # Glow morado con 30% de opacidad
+    offset=Offset(0, 8),
+)
+
+COLOR_GLASS_BORDER_TOP = "#FFFFFF"  # Borde superior e izquierdo (reflejo de luz, 20% opacidad)
+COLOR_GLASS_BORDER_BOTTOM = "#9D4EDD"  # Borde inferior y derecho (sombra de color, 15% opacidad)
 
 # TIPOGRAFIA (TEXTOS Y TITULOS)
 TEXT_PRIMARY = "#FFFFFF"  # Titulos principales, balances e informacion critica
