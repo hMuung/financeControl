@@ -71,3 +71,9 @@ COLOR_BTN_SECONDARY_BG = "#0FFFFFFF"  # Fondo de boton secundario estilo cristal
 COLOR_BTN_SECONDARY_BORDER = "#4DC77DFF"  # Borde acentuado para boton secundario
 COLOR_BTN_SECONDARY_TEXT = "#E0AAFF"  # Texto vibrante para boton secundario
 COLOR_BTN_TERTIARY_TEXT = "#8E82A0"  # Texto de boton terciario o accion de cancelar
+
+# INCOME Y EXPENSE
+INCOME_COLOR = "#25DCC4"  # Turquesa neón
+EXPENSE_COLOR = "#FF007F"  # Magenta
+ALERT_COLOR = "#FFB703"
+BALANCE_COLOR = "#3A86FF"  # Azul neón
