@@ -1,5 +1,6 @@
 # src/views/components/common/base_dropdown.py
 import flet as ft
+from dataclasses import field
 
 from src.views.utils.theme import (
     COLOR_ACCENT_BRIGHT,
@@ -19,9 +20,15 @@ _OptionTuple = (
 
 @ft.control
 class BaseDropdown(ft.Dropdown):
-    options_list: list[_OptionTuple] | tuple[_OptionTuple, ...] = ()
+    options_dict: dict[str, list[_OptionTuple] | tuple[_OptionTuple, ...]] = field(
+        default_factory=dict
+    )
+    options_list: list[_OptionTuple] | tuple[_OptionTuple, ...] = field(
+        default_factory=tuple
+    )
     label: str | None = None
     hint_text: str | None = None
+    default_key: str | None = None
     leading_icon: str | None = None
     default_fill_color: str = COLOR_BG_MAIN
     default_color: str = TEXT_PRIMARY
@@ -31,6 +38,8 @@ class BaseDropdown(ft.Dropdown):
 
     def init(self):
         self.expand = True
+        self._options_by_key: dict[str, list[ft.dropdown.Option]] = {}
+        self._colors_by_key: dict[str, dict[str, dict]] = {}
         self._option_colors: dict[str, dict] = {}
 
         if not self.label and self.hint_text:
@@ -66,15 +75,41 @@ class BaseDropdown(ft.Dropdown):
         if self.label:
             self.label_style = ft.TextStyle(color=TEXT_MUTED, size=16)
 
-        if self.options_list:
-            self._set_options(self.options_list)
+        if self.options_dict:
+            for key_name, opts in self.options_dict.items():
+                formatted_opts, color_map = self._build_options(opts)
+                self._options_by_key[key_name] = formatted_opts
+                self._colors_by_key[key_name] = color_map
+
+        if self.default_key and self.default_key in self._options_by_key:
+            self.options = self._options_by_key[self.default_key]
+            self._option_colors = self._colors_by_key[self.default_key]
+        elif self.options_list:
+            formatted_opts, color_map = self._build_options(self.options_list)
+            self.options = formatted_opts
+            self._option_colors = color_map
+        elif self._options_by_key:
+            first_key = next(iter(self._options_by_key))
+            self.options = self._options_by_key[first_key]
+            self._option_colors = self._colors_by_key[first_key]
 
         if self.value and self.value in self._option_colors:
             self._apply_option_style(self.value)
 
+    def set_dropdown(self, label: str, key: str):
+        self.label = label
+        self.hint_text = label
 
-    def _set_options(self, options_list: list[_OptionTuple] | tuple[_OptionTuple, ...]):
-        self._option_colors.clear()
+        if key in self._options_by_key:
+            self.options = self._options_by_key[key]
+            self._option_colors = self._colors_by_key[key]
+
+        self.clean_data()
+
+    def _build_options(
+        self, options_list: list[_OptionTuple] | tuple[_OptionTuple, ...]
+    ) -> tuple[list[ft.dropdown.Option], dict[str, dict]]:
+        option_colors = {}
         formatted_options = []
 
         if options_list:
@@ -89,7 +124,6 @@ class BaseDropdown(ft.Dropdown):
                 icon_val = None
 
                 if len(opt) == 5:
-                    # (key, text, text_color, bg_color, icon)
                     key_val, text_val, text_color, bg_color, icon_val = (
                         str(opt[0]),
                         str(opt[1]),
@@ -102,7 +136,6 @@ class BaseDropdown(ft.Dropdown):
                         opt[1].startswith("#") or "COLOR" in opt[1].upper()
                     )
                     if is_color:
-                        # (name, text_color, bg_color, icon)
                         key_val, text_val, text_color, bg_color, icon_val = (
                             str(opt[0]),
                             str(opt[0]),
@@ -111,7 +144,6 @@ class BaseDropdown(ft.Dropdown):
                             opt[3],
                         )
                     else:
-                        # (key, text, text_color, bg_color)
                         key_val, text_val, text_color, bg_color = (
                             str(opt[0]),
                             str(opt[1]),
@@ -119,7 +151,6 @@ class BaseDropdown(ft.Dropdown):
                             opt[3],
                         )
                 elif len(opt) == 3:
-                    # (name, text_color, bg_color)
                     key_val, text_val, text_color, bg_color = (
                         str(opt[0]),
                         str(opt[0]),
@@ -127,13 +158,11 @@ class BaseDropdown(ft.Dropdown):
                         opt[2],
                     )
                 elif len(opt) == 2:
-                    # (key, text)
                     key_val, text_val = str(opt[0]), str(opt[1])
                 else:
                     continue
 
-                # Guardar mapa de colores e icono por opcion
-                self._option_colors[key_val] = {
+                option_colors[key_val] = {
                     "bgcolor": bg_color,
                     "color": text_color,
                     "icon": icon_val,
@@ -168,10 +197,7 @@ class BaseDropdown(ft.Dropdown):
                     )
                 )
 
-        self.options = formatted_options
-
-        if self.value and self.value in self._option_colors:
-            self._apply_option_style(self.value)
+        return formatted_options, option_colors
 
     def _apply_option_style(self, key_val: str):
         colors = self._option_colors.get(key_val, {})

@@ -10,7 +10,19 @@ from views.empty_view import EmptyView
 from views.home_view import HomeView
 
 
+from controllers.category_controller import CategoryController
+from controllers.origin_controller import OriginController
+from controllers.expense_controller import ExpenseController
+from controllers.income_controller import IncomeController
+
+
 def main(page: ft.Page):
+
+    CategoryController()
+    OriginController()
+    ExpenseController()
+    IncomeController()
+
     page.platform = ft.PagePlatform.ANDROID
     page.window.resizable = False
     page.padding = 0

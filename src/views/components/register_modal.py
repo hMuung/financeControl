@@ -1,19 +1,19 @@
 # src/views/components/register_modal.py
 import flet as ft
 
-from views.components.common.modal_base import ModalBase
 from views.components.common.amount_textfield import AmountTextField
+from views.components.common.base_button import cancel_button, save_button
 from views.components.common.base_dropdown import BaseDropdown
 from views.components.common.desciption_textfield import DescriptionTextField
-from views.components.common.base_button import cancel_button, save_button
+from views.components.common.modal_base import ModalBase
 from views.utils.theme import (
+    ALERT_COLOR,
     COLOR_ACCENT_PRIMARY,
     EXPENSE_COLOR,
     INCOME_COLOR,
     INPUT_BG_IDLE,
     TEXT_MUTED,
     TEXT_PRIMARY,
-    ALERT_COLOR,
 )
 
 
@@ -31,11 +31,31 @@ class RegisterModal(ModalBase):
             "Transferencia": COLOR_ACCENT_PRIMARY,
         }
 
+        self.OPCIONES_DICT = {
+            "ingreso": [
+                ("Nómina", "#000000", INCOME_COLOR, ft.Icons.ATTACH_MONEY_ROUNDED),
+                ("Ventas", "#FFFFFF", COLOR_ACCENT_PRIMARY, ft.Icons.STORE_ROUNDED),
+                ("Inversiones", "#FFFFFF", ALERT_COLOR, ft.Icons.SHOW_CHART_ROUNDED),
+                ("Freelance", "#FFFFFF", EXPENSE_COLOR, ft.Icons.WORK_ROUNDED),
+            ],
+            "egreso": [
+                ("Alimentación", "#FFFFFF", EXPENSE_COLOR, ft.Icons.RESTAURANT_ROUNDED),
+                ("Servicios", "#000000", ALERT_COLOR, ft.Icons.LIGHTBULB_ROUNDED),
+                ("Transporte", "#FFFFFF", COLOR_ACCENT_PRIMARY, ft.Icons.DIRECTIONS_BUS_ROUNDED),
+                ("Salud", "#FFFFFF", INCOME_COLOR, ft.Icons.LOCAL_HOSPITAL_ROUNDED),
+            ],
+            "cuentas": [
+                ("Efectivo", "#000000", INCOME_COLOR, ft.Icons.ACCOUNT_BALANCE_WALLET_ROUNDED),
+                ("Banco", "#FFFFFF", ALERT_COLOR, ft.Icons.ACCOUNT_BALANCE_ROUNDED),
+                ("Tarjeta", "#FFFFFF", COLOR_ACCENT_PRIMARY, ft.Icons.CREDIT_CARD_ROUNDED),
+            ],
+        }
+
         header = ft.Container(
             width=float("inf"),
             height=40,
             padding=0,
-            border=ft.Border(bottom=ft.BorderSide(1,TEXT_MUTED)),
+            border=ft.Border(bottom=ft.BorderSide(1, TEXT_MUTED)),
             content=ft.Row(
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
@@ -54,7 +74,7 @@ class RegisterModal(ModalBase):
                         on_click=self._handle_back,
                     ),
                 ],
-            )
+            ),
         )
 
         selector_controls = []
@@ -117,35 +137,30 @@ class RegisterModal(ModalBase):
 
         self.amount_input = AmountTextField()
 
-        CATEGORIAS_OPCIONES = [
-            ("Alimentación", "#FFFFFF", EXPENSE_COLOR, ft.Icons.RESTAURANT_ROUNDED),
-            ("Nómina", "#000000", INCOME_COLOR, ft.Icons.ATTACH_MONEY_ROUNDED),
-            ("Servicios", "#000000", ALERT_COLOR, ft.Icons.LIGHTBULB_ROUNDED),
-            ("Transporte", "#FFFFFF", COLOR_ACCENT_PRIMARY, ft.Icons.DIRECTIONS_BUS_ROUNDED),
-        ]
-        CUENTAS_OPCIONES = [
-            ("Efectivo", "#000000", INCOME_COLOR, ft.Icons.ACCOUNT_BALANCE_WALLET_ROUNDED),
-            ("Banco", "#FFFFFF", ALERT_COLOR, ft.Icons.ACCOUNT_BALANCE_ROUNDED),
-            ("Tarjeta", "#FFFFFF", COLOR_ACCENT_PRIMARY, ft.Icons.CREDIT_CARD_ROUNDED),
-        ]
-
         self.category_dropdown = BaseDropdown(
-            options_list=CATEGORIAS_OPCIONES,
-            hint_text="Categoría",
+            options_dict=self.OPCIONES_DICT,
+            default_key="ingreso",
+            label="Categoría",
             border_radius=16,
             max_menu_height=180,
         )
 
         self.account_dropdown = BaseDropdown(
-            options_list=CUENTAS_OPCIONES,
-            hint_text="Cuenta",
+            options_dict=self.OPCIONES_DICT,
+            default_key="cuentas",
+            label="Destino",
             border_radius=16,
             max_menu_height=180,
         )
 
         self.description_input = DescriptionTextField(
-            label="Descripción (opcional)",
+            label="Descripción opcional",
             border_radius=16,
+        )
+
+        self.description_row = ft.Row(
+            tight=True,
+            controls=[self.description_input],
         )
 
         self.body = ft.Column(
@@ -157,31 +172,24 @@ class RegisterModal(ModalBase):
                 header,
                 selector_bar,
                 self.amount_input,
-                ft.Row( 
+                self.description_row,
+                ft.Row(
                     tight=True,
-                    controls=[self.description_input]
+                    controls=[self.category_dropdown],
                 ),
-                ft.Row( 
+                ft.Row(
                     tight=True,
-                    controls=[self.category_dropdown,]
+                    controls=[self.account_dropdown],
                 ),
-                ft.Row( 
-                    tight=True,
-                    controls=[self.account_dropdown,]
-                ),
-                ft.Container(),
-                ft.Container(),
-                ft.Row( 
+                ft.Row(
                     tight=True,
                     alignment=ft.MainAxisAlignment.END,
                     vertical_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
                         cancel_button(on_click=self._handle_back),
                         save_button(on_click=self._handle_save),
-                    ]
+                    ],
                 ),
-                
-               
             ],
         )
 
@@ -201,25 +209,46 @@ class RegisterModal(ModalBase):
 
         self.selected_type = option
 
+        # Barra de categoria
         for opt, (container, text_ctrl) in self._buttons.items():
             is_sel = opt == option
             container.bgcolor = self._get_bg_color(opt, is_sel)
             text_ctrl.color = self._get_text_color(is_sel)
             text_ctrl.weight = ft.FontWeight.BOLD if is_sel else ft.FontWeight.W_500
 
+        # Limpiar entradas
         self.amount_input.amount = 0
         self.description_input.clean_data()
-        self.category_dropdown.clean_data()
         self.account_dropdown.clean_data()
+        self.category_dropdown.clean_data()
 
-        self._selector_row.update()
+        # Actualizacion de dd segun opcion de barra
+        if option == "Ingreso":
+            self.description_row.visible = True
+            self.category_dropdown.set_dropdown(label="Categoría", key="ingreso")
+            self.account_dropdown.set_dropdown(label="Destino", key="cuentas")
+
+        elif option == "Egreso":
+            self.description_row.visible = True
+            self.category_dropdown.set_dropdown(label="Categoría", key="egreso")
+            self.account_dropdown.set_dropdown(label="Origen", key="cuentas")
+
+        elif option == "Transferencia":
+            self.description_row.visible = False
+            self.category_dropdown.set_dropdown(label="Origen", key="cuentas")
+            self.account_dropdown.set_dropdown(label="Destino", key="cuentas")
+
+        # Refrescar interfaz
+        if self.body and self.body.page:
+            self.body.update()
 
     def _handle_save(self, e):
         monto = self.amount_input.amount
-        descripcion = self.description_input.value
-        categoria = self.category_dropdown.value
-        cuenta = self.account_dropdown.value
-        print("hello")
+        descripcion = self.description_input.value if self.description_row.visible else ""
+        categoria_o_origen = self.category_dropdown.value
+        cuenta_o_destino = self.account_dropdown.value
+
+        print(f"[{self.selected_type}] {monto=}, {descripcion=}, {categoria_o_origen=}, {cuenta_o_destino=}")
         self._handle_back(e)
 
     def _handle_back(self, e):
