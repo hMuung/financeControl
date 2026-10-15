@@ -1,12 +1,12 @@
-# src/views/components/common/custom_modal.py
-from dataclasses import field
-from typing import Optional
+# src/views/components/common/modal_bases.py
 import flet as ft
+from typing import Optional
 
 from views.utils.theme import (
-    COLOR_GLASS_BORDER_TOP,
     GRADIENT_GLASS_CARD,
+    GLASS_CARD_SHADOW,
     TEXT_MUTED,
+    GLASS_CARD_BORDER_COLOR
 )
 
 
@@ -15,18 +15,13 @@ class ModalBase(ft.AlertDialog):
     body: Optional[ft.Control] = None
 
     def init(self):
-        # Fondo transparente
         self.bgcolor = ft.Colors.TRANSPARENT
-        self.shadow_color = GRADIENT_GLASS_CARD
         self.content_padding = 0
         self.action_button_padding = 0
-        
 
         # Determinacion del contenido interno
         if not self.body:
             self.body = ft.Container(
-                width=200,
-                height=200,
                 alignment=ft.Alignment.CENTER,
                 padding=20,
                 content=ft.Text(
@@ -37,19 +32,13 @@ class ModalBase(ft.AlertDialog):
                 ),
             )
 
-        # Contenedor con efecto Glassmorphism Morado
+        # Contenedor de fondo
         self.content = ft.Container(
-            expand=True,
-            padding=20,
+            padding=ft.Padding.all(18),
             border_radius=20,
             gradient=GRADIENT_GLASS_CARD,
-            border=ft.Border.all(1, COLOR_GLASS_BORDER_TOP),
+            shadow=GLASS_CARD_SHADOW,
+            border=ft.Border.all(1, color=GLASS_CARD_BORDER_COLOR),
             blur=ft.Blur(16, 16, ft.BlurTileMode.CLAMP),
             content=self.body,
         )
-
-    def open_dialog(self, page: ft.Page):
-        page.show_dialog(self)
-
-    def close_dialog(self, page: ft.Page):
-        page.pop_dialog(self)

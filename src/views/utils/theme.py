@@ -33,6 +33,8 @@ GLASS_CARD_SHADOW = BoxShadow(
 
 COLOR_GLASS_BORDER_TOP = "#FFFFFF"  # Borde superior e izquierdo (reflejo de luz, 20% opacidad)
 COLOR_GLASS_BORDER_BOTTOM = "#9D4EDD"  # Borde inferior y derecho (sombra de color, 15% opacidad)
+GLASS_CARD_BORDER_COLOR = "#60FFFFFF"
+
 
 # TIPOGRAFIA (TEXTOS Y TITULOS)
 TEXT_PRIMARY = "#FFFFFF"  # Titulos principales, balances e informacion critica

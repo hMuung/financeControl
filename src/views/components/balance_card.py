@@ -1,5 +1,4 @@
 # src/views/components/balance_card.py
-# src/views/components/balance_card.py
 import flet as ft
 
 from src.views.components.common.pie_chart import BasePieChart
@@ -8,6 +7,7 @@ from src.views.utils.theme import (
     INCOME_COLOR,
     GRADIENT_GLASS_CARD,
     GLASS_CARD_SHADOW,
+    GLASS_CARD_BORDER_COLOR,
     TEXT_PRIMARY,
     TEXT_SECONDARY,
     ALERT_COLOR
@@ -48,7 +48,7 @@ class BalanceCard(ft.Container):
         self.shadow = GLASS_CARD_SHADOW
         self.border_radius = 20
         self.padding = ft.Padding.all(18)
-        self.border = ft.Border.all(1, color="#33FFFFFF")
+        self.border = ft.Border.all(1, color=GLASS_CARD_BORDER_COLOR)
 
         # Estructura Visual de la Tarjeta
         self.content = ft.Column(

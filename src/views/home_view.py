@@ -4,6 +4,7 @@ import flet as ft
 from views.components.common.floating_button import FloatingButton
 from views.components.common.header import Header
 
+from views.components.register_modal import RegisterModal
 from views.components.balance_card import BalanceCard
 
 from views.utils.theme import COLOR_ACCENT_PRIMARY
@@ -19,7 +20,8 @@ class HomeView(ft.Stack):
         ingresos=2500.00,
         egresos=1000.50,
         title="Ingresos vs Egresos (Octubre)",
-    )
+    )   
+        self.register_modal = RegisterModal()
 
         # Contenido principal
         main_content = ft.Column(
@@ -65,4 +67,5 @@ class HomeView(ft.Stack):
         ]
 
     def _handle_floating_button_click(self, e: ft.ControlEvent):
+        self.page.show_dialog(self.register_modal)
         pass
