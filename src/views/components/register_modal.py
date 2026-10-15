@@ -224,17 +224,14 @@ class RegisterModal(ModalBase):
 
         # Actualizacion de dd segun opcion de barra
         if option == "Ingreso":
-            self.description_row.visible = True
             self.category_dropdown.set_dropdown(label="Categoría", key="ingreso")
             self.account_dropdown.set_dropdown(label="Destino", key="cuentas")
 
         elif option == "Egreso":
-            self.description_row.visible = True
             self.category_dropdown.set_dropdown(label="Categoría", key="egreso")
             self.account_dropdown.set_dropdown(label="Origen", key="cuentas")
 
         elif option == "Transferencia":
-            self.description_row.visible = False
             self.category_dropdown.set_dropdown(label="Origen", key="cuentas")
             self.account_dropdown.set_dropdown(label="Destino", key="cuentas")
 
