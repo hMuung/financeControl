@@ -287,7 +287,6 @@ class GlassDataTable(ft.Container):
             border_radius=6,
             border=ft.Border.only(bottom=ft.BorderSide(1, INPUT_BORDER_IDLE)),
             ink=True,
-            #on_click=lambda e, data_item=item: self._handle_row_click(e, data_item),
             on_long_press=lambda e, data_item=item: self._handle_row_click(e, data_item),
         )
 
@@ -326,7 +325,6 @@ class GlassDataTable(ft.Container):
             if idx < len(row_cells):
                 row_cells[idx].content.value = text_val
 
-        row_ctrl.on_click = lambda e, data_item=item: self._handle_row_click(e, data_item)
         row_ctrl.on_long_press = lambda e, data_item=item: self._handle_row_click(e, data_item)
 
     def update_data(self, new_data: list[dict]):
