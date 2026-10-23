@@ -8,6 +8,7 @@ from views.components.page_indicator import PageIndicator
 
 from views.empty_view import EmptyView
 from views.home_view import HomeView
+from views.record_view import RecordView
 
 
 from controllers.category_controller import CategoryController
@@ -40,10 +41,12 @@ def main(page: ft.Page):
 
     # Instancias de vistas
     background = Background()
+    home_view = HomeView()
+    record_view = RecordView()
 
     views = [
-        HomeView(),
-        EmptyView(message="Historial"),
+        home_view,
+        record_view,
         EmptyView(message="Proyección"),
         EmptyView(message="Análisis"),
         EmptyView(message="Más"),
@@ -70,7 +73,14 @@ def main(page: ft.Page):
     )
 
     def handle_page_change(e: ft.ControlEvent):
-        indicator.set_selected_index(e.control.selected_index)
+        index = e.control.selected_index
+        indicator.set_selected_index(index)
+        
+        if index == 0:
+            home_view.did_mount()
+
+        if index == 1:
+            record_view.did_mount()
 
     page_view = ft.PageView(
         on_change=handle_page_change,

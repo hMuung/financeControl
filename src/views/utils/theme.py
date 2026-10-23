@@ -79,3 +79,24 @@ INCOME_COLOR = "#25DCC4"  # Turquesa neón
 EXPENSE_COLOR = "#FF007F"  # Magenta
 ALERT_COLOR = "#FFB703"
 BALANCE_COLOR = "#3A86FF"  # Azul neón
+
+
+# TOAST / NOTIFICACIONES (GRADIENTES NEÓN)
+TOAST_COLORS = {
+    "success": {
+        "primary": "#25DCC4",  # Turquesa neón (Income)
+        "secondary": "#10B981",  # Verde esmeralda neón
+    },
+    "error": {
+        "primary": "#FF007F",  # Magenta neón (Expense)
+        "secondary": "#D90429",  # Rojo neón profundo
+    },
+    "warning": {
+        "primary": "#FFB703",  # Ámbar (Alert)
+        "secondary": "#FB8500",  # Naranja neón
+    },
+    "info": {
+        "primary": "#3A86FF",  # Azul neón (Balance)
+        "secondary": "#9D4EDD",  # Morado acento
+    },
+}

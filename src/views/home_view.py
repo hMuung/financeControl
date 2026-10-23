@@ -7,6 +7,9 @@ from views.components.common.header import Header
 from views.components.register_modal import RegisterModal
 from views.components.balance_card import BalanceCard
 
+from controllers.expense_controller import ExpenseController
+from controllers.income_controller import IncomeController
+
 from views.utils.theme import COLOR_ACCENT_PRIMARY
 
 
@@ -16,11 +19,12 @@ class HomeView(ft.Stack):
     def init(self):
            
         # Instancia del control
-        card = BalanceCard(
-        ingresos=2500.00,
-        egresos=1000.50,
-        title="Ingresos vs Egresos (Octubre)",
-    )   
+        self.card = BalanceCard(
+            ingresos=2500.00,
+            egresos=1000.50,
+            title="Ingresos vs Egresos (Octubre)",
+        )   
+
         self.register_modal = RegisterModal()
 
         # Contenido principal
@@ -29,15 +33,21 @@ class HomeView(ft.Stack):
             scroll=ft.ScrollMode.HIDDEN,
             expand=True,
             controls=[
-                Header(
-                    title="CASH FLOW REGISTER",
-                    logo_src=ft.Icons.ATTACH_MONEY_ROUNDED
+                ft.Column(
+                    spacing=0,
+                    tight=True,
+                    controls=[
+                        Header(
+                            title="CASH FLOW REGISTER",
+                            logo_src=ft.Icons.ATTACH_MONEY_ROUNDED
+                        ),
+                        ft.Divider(
+                            color=COLOR_ACCENT_PRIMARY,
+                            height=2,
+                        ),
+                    ]
                 ),
-                ft.Divider(
-                    color=COLOR_ACCENT_PRIMARY,
-                    height=2
-                ),
-                card
+                self.card
             ],
         )
 
@@ -69,3 +79,6 @@ class HomeView(ft.Stack):
     def _handle_floating_button_click(self, e: ft.ControlEvent):
         self.page.show_dialog(self.register_modal)
         pass
+
+    def did_mount(self):
+        print("update card")
